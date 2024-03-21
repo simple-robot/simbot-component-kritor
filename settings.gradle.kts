@@ -3,6 +3,6 @@ plugins {
 }
 rootProject.name = "simbot-component-kritor"
 
-include(":proto")
+// include(":proto")
 include(":simbot-component-kritor-proto")
 include(":simbot-component-kritor-core")

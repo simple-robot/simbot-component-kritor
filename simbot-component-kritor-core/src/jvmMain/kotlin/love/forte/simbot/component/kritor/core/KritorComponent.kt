@@ -1,11 +1,14 @@
 package love.forte.simbot.component.kritor.core
 
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.subclass
+import love.forte.simbot.bot.serializableBotConfigurationPolymorphic
 import love.forte.simbot.common.function.ConfigurerFunction
 import love.forte.simbot.common.function.invokeWith
 import love.forte.simbot.component.Component
 import love.forte.simbot.component.ComponentConfigureContext
 import love.forte.simbot.component.ComponentFactory
+import love.forte.simbot.component.kritor.core.bot.SerializableKritorBotConfiguration
 
 
 /**
@@ -23,6 +26,9 @@ public class KritorComponent : Component {
     override val serializersModule: SerializersModule
         get() = SerializersModule
 
+    override fun toString(): String =
+        "KritorComponent(id=$ID_VALUE)"
+
     public companion object Factory : ComponentFactory<KritorComponent, KritorComponentConfiguration> {
         private val INSTANCE = KritorComponent()
 
@@ -34,7 +40,9 @@ public class KritorComponent : Component {
 
         @JvmField
         public val SerializersModule: SerializersModule = SerializersModule {
-
+            serializableBotConfigurationPolymorphic {
+                subclass(SerializableKritorBotConfiguration.serializer())
+            }
         }
 
         override fun create(
