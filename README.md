@@ -23,8 +23,68 @@
 </div>
 
 
-Simple Robot Kritor 组件是一个将 
-[Kritor](https://github.com/KarinJS/kritor-kotlin) 
+Simple Robot Kritor 组件是一个将
+[Kritor](https://github.com/KarinJS/kritor-kotlin)
 协议在
 [Simple Robot](http://github.com/simple-robot/simpler-robot) 标准API下实现的组件库，
 并由此提供simbot中的各项能力。
+
+## Examples
+
+使用simbot核心库
+
+```Kotlin
+val application = launchSimpleApplication {
+    useKritor() // 安装使用Kritor组件库
+}
+
+application.kritorBots {
+    // 注册bot并启动
+    retister(account = "", ticket = "") {
+        // config...
+    }.also { it.start() }
+}
+
+// 注册事件处理器
+application.listeners {
+    // 处理事件 ChatGroupMessage
+    // 这是simbot API定义的泛用类型
+    process<ChatGroupMessageEvent> {
+        // ...
+    }
+
+    // 指定处理 Kritor 组件内定义的各事件类型
+    process<KritorEvent> {
+        // ...
+    }
+}
+```
+
+使用Spring Boot starter
+
+配置信息:
+
+```json
+{
+  "component": "simbot.kritor",
+  "auth": {
+    "account": "",
+    "ticket": ""
+  },
+  "config": {
+  }
+}
+```
+
+```Kotlin
+@SpringBootApplication
+@EnableSimbot // 启动simbot
+class MainApp
+
+// 默认配置下，simbot会自动扫描并加载配置的bot信息，
+// 并默认地自动启动它们
+
+fun main(args: Array<String>) {
+    runApplication<MainApp>(*args)
+}
+```
