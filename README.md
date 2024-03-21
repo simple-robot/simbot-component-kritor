@@ -24,7 +24,7 @@
 
 
 Simple Robot Kritor 组件是一个将
-[Kritor](https://github.com/KarinJS/kritor-kotlin)
+[Kritor](https://github.com/KarinJS/kritor)
 协议在
 [Simple Robot](http://github.com/simple-robot/simpler-robot) 标准API下实现的组件库，
 并由此提供simbot中的各项能力。
@@ -73,7 +73,12 @@ application.listeners {
   "component": "simbot.kritor",
   "auth": {
     "account": "",
-    "ticket": ""
+    "ticket": "",
+    "channel": {
+        "type": "address",
+        "name": "localhost",
+        "port": 8080
+    }
   },
   "config": {
   }
