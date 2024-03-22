@@ -94,6 +94,10 @@ internal class KritorBotImpl(
 
         val channel = managedChannelBuilder.build()
         services = initServices(channel)
+        job.invokeOnCompletion {
+            logger.info("Shutdown channel {}", channel)
+            channel.shutdown()
+        }
 
         // 鉴权
         doAuth()
