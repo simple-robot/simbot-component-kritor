@@ -2,6 +2,7 @@ package love.forte.simbot.component.kritor.core.bot.internal
 
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
+import io.grpc.Status
 import io.kritor.AuthCode
 import io.kritor.AuthReq
 import io.kritor.AuthRsp
@@ -14,6 +15,9 @@ import io.kritor.event.*
 import io.kritor.file.GroupFileServiceGrpcKt
 import io.kritor.friend.FriendServiceGrpcKt
 import io.kritor.group.GroupServiceGrpcKt
+import io.kritor.group.getGroupInfoRequest
+import io.kritor.group.getGroupListRequest
+import io.kritor.group.groupInfoOrNull
 import io.kritor.guild.GuildServiceGrpcKt
 import io.kritor.message.ForwardMessageServiceGrpcKt
 import io.kritor.message.MessageServiceGrpcKt
@@ -31,16 +35,21 @@ import love.forte.simbot.bot.GroupRelation
 import love.forte.simbot.bot.GuildRelation
 import love.forte.simbot.bot.JobBasedBot
 import love.forte.simbot.common.collectable.Collectable
+import love.forte.simbot.common.collectable.flowCollectable
 import love.forte.simbot.common.id.ID
+import love.forte.simbot.common.id.NumericalID
 import love.forte.simbot.common.id.StringID.Companion.ID
+import love.forte.simbot.common.id.literal
 import love.forte.simbot.component.kritor.core.AuthException
 import love.forte.simbot.component.kritor.core.KritorComponent
 import love.forte.simbot.component.kritor.core.actor.KritorGroup
+import love.forte.simbot.component.kritor.core.actor.internal.toGroup
 import love.forte.simbot.component.kritor.core.bot.KritorBot
 import love.forte.simbot.component.kritor.core.bot.KritorBotConfiguration
 import love.forte.simbot.component.kritor.core.bot.KritorBotServices
 import love.forte.simbot.component.kritor.core.bot.KritorGroupRelation
 import love.forte.simbot.logger.LoggerFactory
+import org.checkerframework.checker.units.qual.g
 import kotlin.coroutines.CoroutineContext
 
 
@@ -144,20 +153,38 @@ internal class KritorBotImpl(
 
     private inner class KritorGroupRelationImpl : KritorGroupRelation {
         override suspend fun groupCount(refresh: Boolean): Int {
-            TODO("Not yet implemented")
+            return getGroupListResponse(refresh).groupInfoCount
         }
 
-        override fun groups(refresh: Boolean): Collectable<KritorGroup> {
-            TODO("Not yet implemented")
+        override fun groups(refresh: Boolean): Collectable<KritorGroup> = flowCollectable {
+            val list = getGroupListResponse(refresh).groupInfoList
+            list.forEach { g -> emit(g.toGroup(this@KritorBotImpl)) }
         }
+
+        private suspend fun getGroupListResponse(refresh: Boolean) =
+            services.groupService.getGroupList(getGroupListRequest {
+                this.refresh = refresh
+            })
 
         override suspend fun group(id: ID): KritorGroup? {
-            TODO("Not yet implemented")
+            val groupIdValue = (id as? NumericalID)?.toLong() ?: id.literal.toLong()
+
+            return kotlin.runCatching {
+                services.groupService.getGroupInfo(getGroupInfoRequest {
+                    this.groupId = groupIdValue
+                })
+            }.getOrElse { e ->
+                val status = Status.fromThrowable(e)
+                if (status.code == Status.Code.NOT_FOUND) null else throw e
+            }?.groupInfo?.toGroup(this@KritorBotImpl)
         }
     }
 
     override val contactRelation: ContactRelation? = null
     override val guildRelation: GuildRelation? = null
+
+
+
 
 
     private suspend fun processEvents(eventFlow: Flow<EventStructure>) {

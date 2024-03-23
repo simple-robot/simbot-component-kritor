@@ -11,6 +11,7 @@ import love.forte.simbot.common.id.LongID.Companion.ID
 import love.forte.simbot.common.id.NumericalID
 import love.forte.simbot.common.id.StringID.Companion.ID
 import love.forte.simbot.common.id.literal
+import love.forte.simbot.component.kritor.core.message.KritorFace.Companion.toKritorFace
 import love.forte.simbot.component.kritor.core.message.internal.unknownKritorMessageElement
 import love.forte.simbot.message.*
 import love.forte.simbot.message.Message
@@ -49,7 +50,7 @@ internal inline fun Message.Element.resolveToKritorElements(block: (Message.Elem
         is At -> TODO()
         is AtAll -> TODO()
 
-        is KritorSendMessageElement -> e.toElement()
+        is KritorSendElementTransformer -> e.toElement()
     }
     // TODO  Message.resolveToKritorElements
 }
@@ -431,8 +432,7 @@ public fun EventElement.toMessage(): Message.Element {
 
         ElementType.FACE -> {
             val face = ee.face
-            // TODO big face
-            Face(face.id.ID)
+            face.toKritorFace()
         }
         // ElementType.BUBBLE_FACE -> TODO()
         // ElementType.REPLY -> TODO()
@@ -452,7 +452,7 @@ public fun EventElement.toMessage(): Message.Element {
         // ElementType.FORWARD -> TODO()
         // ElementType.CONTACT -> TODO()
         ElementType.JSON -> KritorJson(ee.json.json)
-        ElementType.XML -> KritorJson(ee.xml.xml)
+        ElementType.XML -> KritorXml(ee.xml.xml)
         // ElementType.FILE -> TODO()
         // ElementType.MARKDOWN -> TODO()
         // ElementType.BUTTON -> TODO()
@@ -460,5 +460,4 @@ public fun EventElement.toMessage(): Message.Element {
         // ElementType.UNRECOGNIZED -> TODO()
         else -> unknownKritorMessageElement(ee)
     }
-    TODO()
 }
