@@ -6,12 +6,13 @@ import io.kritor.event.ElementType
 import io.kritor.event.ImageType
 import io.kritor.event.MusicPlatform
 import io.kritor.message.*
-import love.forte.simbot.common.id.IntID.Companion.ID
 import love.forte.simbot.common.id.LongID.Companion.ID
 import love.forte.simbot.common.id.NumericalID
 import love.forte.simbot.common.id.StringID.Companion.ID
 import love.forte.simbot.common.id.literal
+import love.forte.simbot.component.kritor.core.message.KritorBubbleFace.Companion.toKritorBubbleFace
 import love.forte.simbot.component.kritor.core.message.KritorFace.Companion.toKritorFace
+import love.forte.simbot.component.kritor.core.message.KritorReply.Companion.toKritorReply
 import love.forte.simbot.component.kritor.core.message.internal.unknownKritorMessageElement
 import love.forte.simbot.message.*
 import love.forte.simbot.message.Message
@@ -434,8 +435,16 @@ public fun EventElement.toMessage(): Message.Element {
             val face = ee.face
             face.toKritorFace()
         }
-        // ElementType.BUBBLE_FACE -> TODO()
-        // ElementType.REPLY -> TODO()
+
+        ElementType.BUBBLE_FACE -> {
+            val bubbleFace = ee.bubbleFace
+            bubbleFace.toKritorBubbleFace()
+        }
+
+        ElementType.REPLY -> {
+            val reply = ee.reply
+            reply.toKritorReply()
+        }
         // ElementType.IMAGE -> TODO()
         // ElementType.VOICE -> TODO()
         // ElementType.VIDEO -> TODO()

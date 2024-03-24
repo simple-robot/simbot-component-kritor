@@ -1,9 +1,10 @@
 package love.forte.simbot.component.kritor.core.actor
 
 import io.kritor.contact.StrangerInfo
-import love.forte.simbot.common.id.ID
-import love.forte.simbot.common.id.LongID.Companion.ID
+import love.forte.simbot.common.id.StringID
 import love.forte.simbot.common.id.StringID.Companion.ID
+import love.forte.simbot.common.id.ULongID
+import love.forte.simbot.common.id.ULongID.Companion.ID
 import love.forte.simbot.definition.Contact
 import love.forte.simbot.suspendrunner.ST
 
@@ -18,7 +19,7 @@ public interface KritorStranger : KritorActor<KritorSourceStrangerInfo>, Contact
     /**
      * 陌生人的 `uid`
      */
-    override val id: ID
+    override val id: StringID
         get() = source.uid.ID
 
     /**
@@ -26,8 +27,8 @@ public interface KritorStranger : KritorActor<KritorSourceStrangerInfo>, Contact
      *
      * @see StrangerInfo.getUin
      */
-    public val uin: ID
-        get() = source.uin.ID
+    public val uin: ULongID
+        get() = source.uin.toULong().ID
 
     /**
      * 请求并判断此陌生人是否为黑名单用户。

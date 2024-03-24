@@ -11,13 +11,15 @@ import io.kritor.contact.ContactServiceGrpcKt
 import io.kritor.core.GetCurrentAccountResponse
 import io.kritor.core.KritorServiceGrpcKt
 import io.kritor.core.getCurrentAccountRequest
-import io.kritor.event.*
+import io.kritor.event.EventServiceGrpcKt
+import io.kritor.event.EventStructure
+import io.kritor.event.EventType
+import io.kritor.event.requestPushEvent
 import io.kritor.file.GroupFileServiceGrpcKt
 import io.kritor.friend.FriendServiceGrpcKt
 import io.kritor.group.GroupServiceGrpcKt
 import io.kritor.group.getGroupInfoRequest
 import io.kritor.group.getGroupListRequest
-import io.kritor.group.groupInfoOrNull
 import io.kritor.guild.GuildServiceGrpcKt
 import io.kritor.message.ForwardMessageServiceGrpcKt
 import io.kritor.message.MessageServiceGrpcKt
@@ -25,31 +27,24 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import love.forte.simbot.bot.ContactRelation
-import love.forte.simbot.bot.GroupRelation
 import love.forte.simbot.bot.GuildRelation
 import love.forte.simbot.bot.JobBasedBot
 import love.forte.simbot.common.collectable.Collectable
 import love.forte.simbot.common.collectable.flowCollectable
-import love.forte.simbot.common.id.ID
-import love.forte.simbot.common.id.NumericalID
+import love.forte.simbot.common.id.*
 import love.forte.simbot.common.id.StringID.Companion.ID
-import love.forte.simbot.common.id.literal
+import love.forte.simbot.common.id.ULongID.Companion.ID
 import love.forte.simbot.component.kritor.core.AuthException
 import love.forte.simbot.component.kritor.core.KritorComponent
 import love.forte.simbot.component.kritor.core.actor.KritorGroup
 import love.forte.simbot.component.kritor.core.actor.internal.toGroup
-import love.forte.simbot.component.kritor.core.bot.KritorBot
-import love.forte.simbot.component.kritor.core.bot.KritorBotConfiguration
-import love.forte.simbot.component.kritor.core.bot.KritorBotServices
-import love.forte.simbot.component.kritor.core.bot.KritorGroupRelation
+import love.forte.simbot.component.kritor.core.bot.*
 import love.forte.simbot.logger.LoggerFactory
-import org.checkerframework.checker.units.qual.g
 import kotlin.coroutines.CoroutineContext
 
 
@@ -75,8 +70,8 @@ internal class KritorBotImpl(
     internal val currentAccount: GetCurrentAccountResponse
         get() = _currentAccount ?: throw IllegalStateException("Bot is not start")
 
-    override val name: String
-        get() = currentAccount.accountName
+    override val accountInfo: BotAccountInfo
+        get() = BotAccountInfoImpl(currentAccount)
 
     override fun isMe(id: ID): Boolean {
         return id == this.id
@@ -184,23 +179,31 @@ internal class KritorBotImpl(
     override val guildRelation: GuildRelation? = null
 
 
-
-
-
     private suspend fun processEvents(eventFlow: Flow<EventStructure>) {
         eventFlow
             .onEach { eventStructure ->
                 logger.debug("Receive event, type: {}, structure: {}", eventStructure.type, eventStructure)
             }
             .collect { eventStructure ->
-            // runCatching {
-            //
-            // }
-            TODO()
+                // runCatching {
+                //
+                // }
+                TODO()
 
-        }
+            }
     }
 
+}
+
+private class BotAccountInfoImpl(private val response: GetCurrentAccountResponse) : BotAccountInfo {
+    override val uid: StringID
+        get() = response.accountUid.ID
+
+    override val uin: ULongID
+        get() = response.accountUin.toULong().ID
+
+    override val name: String
+        get() = response.accountName
 }
 
 

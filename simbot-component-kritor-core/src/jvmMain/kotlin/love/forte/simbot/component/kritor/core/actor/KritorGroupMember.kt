@@ -4,7 +4,10 @@ import io.kritor.group.GroupMemberInfo
 import love.forte.simbot.ability.DeleteOption
 import love.forte.simbot.ability.DeleteSupport
 import love.forte.simbot.common.id.ID
+import love.forte.simbot.common.id.StringID
 import love.forte.simbot.common.id.StringID.Companion.ID
+import love.forte.simbot.common.id.ULongID
+import love.forte.simbot.common.id.ULongID.Companion.ID
 import love.forte.simbot.definition.Member
 import love.forte.simbot.suspendrunner.ST
 import java.time.Duration
@@ -19,15 +22,15 @@ public interface KritorGroupMember : Member, KritorActor<GroupMemberInfo>, Delet
     /**
      * 群成员信息中的 `uid`
      */
-    override val id: ID
+    override val id: StringID
         get() = source.uid.ID
 
     /**
      * 群成员信息中的 `uin`
      * @see GroupMemberInfo.getUin
      */
-    public val uin: Long
-        get() = source.uin
+    public val uin: ULongID
+        get() = source.uin.toULong().ID
 
     /**
      * 群成员昵称

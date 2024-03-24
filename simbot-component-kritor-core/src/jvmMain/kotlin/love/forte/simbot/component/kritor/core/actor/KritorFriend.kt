@@ -1,7 +1,9 @@
 package love.forte.simbot.component.kritor.core.actor
 
-import love.forte.simbot.common.id.ID
+import love.forte.simbot.common.id.StringID
 import love.forte.simbot.common.id.StringID.Companion.ID
+import love.forte.simbot.common.id.ULongID
+import love.forte.simbot.common.id.ULongID.Companion.ID
 import love.forte.simbot.definition.Contact
 
 
@@ -18,15 +20,15 @@ public interface KritorFriend : Contact, KritorActor<KritorSourceFriend> {
      *
      * @see io.kritor.friend.FriendData.getUid
      */
-    override val id: ID
+    override val id: StringID
         get() = source.uid.ID
 
     /**
      * 好友信息中的 `uin`
      * @see io.kritor.friend.FriendData.getUin
      */
-    public val uin: Long
-        get() = source.uin
+    public val uin: ULongID
+        get() = source.uin.toULong().ID
 
     /**
      * 好友昵称

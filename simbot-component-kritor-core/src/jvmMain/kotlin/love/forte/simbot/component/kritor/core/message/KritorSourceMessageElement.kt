@@ -11,17 +11,18 @@ import love.forte.simbot.component.kritor.core.utils.byteArraySerialDescriptor
 
 
 /**
- * 直接提供一个原始的 [Element] 用于发送。
+ * 直接提供一个原始的 [io.kritor.message.Element] 用于发送。
  *
  * @author ForteScarlet
  */
 @SendOnlyKritorMessageElement
 @Serializable
-public class KritorSourceMessageElement(
+public data class KritorSourceMessageElement(
     @Serializable(KritorElementSerializer::class)
-    override val source: Element
-) : KritorMessageElement
-
+    public val source: Element
+) : KritorMessageElement, KritorSendElementTransformer {
+    override fun toElement(): Element = source
+}
 
 public object KritorElementSerializer : KSerializer<Element> {
     override fun deserialize(decoder: Decoder): Element {

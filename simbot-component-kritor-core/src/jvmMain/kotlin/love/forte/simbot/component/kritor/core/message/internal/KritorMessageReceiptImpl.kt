@@ -5,8 +5,8 @@ import io.kritor.message.recallMessageRequest
 import love.forte.simbot.ability.DeleteFailureException
 import love.forte.simbot.ability.DeleteOption
 import love.forte.simbot.ability.StandardDeleteOption
-import love.forte.simbot.common.id.ID
-import love.forte.simbot.common.id.LongID.Companion.ID
+import love.forte.simbot.common.id.ULongID
+import love.forte.simbot.common.id.ULongID.Companion.ID
 import love.forte.simbot.common.time.Timestamp
 import love.forte.simbot.component.kritor.core.bot.internal.KritorBotImpl
 import love.forte.simbot.component.kritor.core.message.KritorMessageReceipt
@@ -23,8 +23,8 @@ internal class KritorMessageReceiptImpl(
     private val source: SendMessageResponse,
     private val sourceContact: KritorSourceMessageContact
 ) : KritorMessageReceipt {
-    override val id: ID
-        get() = source.messageId.ID
+    override val id: ULongID
+        get() = source.messageId.toULong().ID
 
     override val time: Timestamp
         get() = secondsTimestamp(source.messageTime)

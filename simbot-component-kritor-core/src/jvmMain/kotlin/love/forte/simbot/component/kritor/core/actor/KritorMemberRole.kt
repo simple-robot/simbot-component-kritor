@@ -1,7 +1,7 @@
 package love.forte.simbot.component.kritor.core.actor
 
 import io.kritor.group.MemberRole
-import love.forte.simbot.common.id.ID
+import love.forte.simbot.common.id.IntID
 import love.forte.simbot.common.id.IntID.Companion.ID
 import love.forte.simbot.definition.Role
 
@@ -13,12 +13,12 @@ public enum class KritorMemberRole(public val source: MemberRole) : Role {
     ADMIN(MemberRole.ADMIN),
     MEMBER(MemberRole.MEMBER),
     OWNER(MemberRole.OWNER),
-    STRANGER(MemberRole.STRANGER),;
+    STRANGER(MemberRole.STRANGER);
 
     /**
      * 同 [ordinal]
      */
-    override val id: ID
+    override val id: IntID
         get() = ordinal.ID
 
     /**

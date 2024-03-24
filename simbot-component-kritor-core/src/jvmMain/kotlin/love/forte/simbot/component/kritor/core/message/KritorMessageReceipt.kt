@@ -4,6 +4,7 @@ import love.forte.simbot.ability.DeleteFailureException
 import love.forte.simbot.ability.DeleteOption
 import love.forte.simbot.ability.StandardDeleteOption
 import love.forte.simbot.common.id.ID
+import love.forte.simbot.common.id.ULongID
 import love.forte.simbot.common.time.Timestamp
 import love.forte.simbot.message.MessageReceipt
 
@@ -20,7 +21,7 @@ public interface KritorMessageReceipt : MessageReceipt {
     /**
      * 发送成功后的消息ID
      */
-    public val id: ID
+    public val id: ULongID
 
     /**
      * 发送时间

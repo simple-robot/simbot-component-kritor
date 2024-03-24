@@ -10,6 +10,8 @@ import love.forte.simbot.common.collectable.IterableCollectable
 import love.forte.simbot.common.collectable.asCollectable
 import love.forte.simbot.common.id.ID
 import love.forte.simbot.common.id.LongID.Companion.ID
+import love.forte.simbot.common.id.ULongID
+import love.forte.simbot.common.id.ULongID.Companion.ID
 import love.forte.simbot.component.kritor.core.message.KritorMessageReceipt
 import love.forte.simbot.definition.ChatGroup
 import love.forte.simbot.message.Message
@@ -27,8 +29,8 @@ public interface KritorGroup : ChatGroup, KritorActor<GroupInfo>, DeleteSupport 
     /**
      * 群ID
      */
-    override val id: ID
-        get() = source.groupId.ID
+    override val id: ULongID
+        get() = source.groupId.toULong().ID
 
     /**
      * 群名称

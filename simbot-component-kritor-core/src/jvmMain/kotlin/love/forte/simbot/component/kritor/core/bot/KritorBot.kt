@@ -3,6 +3,7 @@ package love.forte.simbot.component.kritor.core.bot
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
 import io.grpc.Status
+import io.kritor.AuthReq
 import io.kritor.AuthenticationGrpcKt
 import io.kritor.contact.ContactServiceGrpcKt
 import io.kritor.core.KritorServiceGrpcKt
@@ -17,6 +18,8 @@ import love.forte.simbot.bot.Bot
 import love.forte.simbot.bot.GroupRelation
 import love.forte.simbot.common.collectable.Collectable
 import love.forte.simbot.common.id.ID
+import love.forte.simbot.common.id.StringID
+import love.forte.simbot.common.id.ULongID
 import love.forte.simbot.component.kritor.core.AuthException
 import love.forte.simbot.component.kritor.core.actor.KritorGroup
 import love.forte.simbot.definition.ChatGroup
@@ -32,8 +35,25 @@ import kotlin.coroutines.CoroutineContext
  */
 public interface KritorBot : Bot {
     override val coroutineContext: CoroutineContext
+
+    /**
+     * 注册Bot时使用的 [`account`][AuthReq.getAccount]。
+     */
     override val id: ID
+
+    /**
+     * Bot的账户信息。在 [start] 后被初始化。
+     */
+    public val accountInfo: BotAccountInfo
+
+    /**
+     * Bot的用户名。在 [start] 后才会被初始化。
+     *
+     * @see accountInfo
+     * @see BotAccountInfo.name
+     */
     override val name: String
+        get() = accountInfo.name
 
     /**
      * [KritorBot] 内部使用的原始的gRPC服务实例信息。
@@ -98,6 +118,22 @@ public interface KritorGroupRelation : GroupRelation {
      */
     @ST(blockingBaseName = "getGroup", blockingSuffix = "", asyncBaseName = "getGroup", reserveBaseName = "getGroup")
     override suspend fun group(id: ID): KritorGroup?
+}
+
+/**
+ * Bot 启动后可获取到的账户信息。
+ */
+public interface BotAccountInfo {
+    /**
+     * 当前账户
+     */
+    public val uid: StringID
+    public val uin: ULongID
+
+    /**
+     * 当前账户名称
+     */
+    public val name: String
 }
 
 /**

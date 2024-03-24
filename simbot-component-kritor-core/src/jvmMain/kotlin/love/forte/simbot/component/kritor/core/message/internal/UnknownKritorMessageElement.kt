@@ -5,7 +5,7 @@ import love.forte.simbot.component.kritor.core.message.KritorMessageElement
 /**
  * 一个尚且不可知的 [KritorMessageElement]
  */
-private class UnknownKritorMessageElement(override val source: Any) : KritorMessageElement {
+private class UnknownKritorMessageElement(public val source: Any) : KritorMessageElement {
     override fun toString(): String = "UnknownKritorMessageElement(source=$source)"
 
     override fun equals(other: Any?): Boolean {
