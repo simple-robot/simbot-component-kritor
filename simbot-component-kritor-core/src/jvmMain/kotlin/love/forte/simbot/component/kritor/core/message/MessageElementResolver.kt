@@ -31,27 +31,92 @@ import io.kritor.message.Scene as MsgScene
 
 internal inline fun Message.Element.resolveToKritorElements(block: (Message.Element, Element) -> Unit) {
     when (val e = this) {
+        is KritorSendElementTransformer -> e.toElement()
 
         is PlainText -> block(e, element {
             type = MsgElementType.TEXT
-            textElement { text = e.text }
+            text = textElement { text = e.text }
         })
 
         is Face -> block(e, element {
             type = MsgElementType.FACE
-            faceElement {
+            face = faceElement {
                 id = (e.id as? NumericalID)?.toInt() ?: e.id.literal.toInt()
                 // this.isBig
             }
         })
 
-        // TODO BigFace
+        is At -> block(e, element {
+            type = MsgElementType.AT
+            at = atElement {
+                // uint64 uin = 1; // qq号，全体成员则uin为0
+                // string uid = 2; // uid二选一，全体成员这里请写all
+                val id = e.target
+                if (id is NumericalID) {
+                    uin = id.toLong()
+                } else {
+                    uid = id.literal
+                }
+            }
+        })
 
-        is Image -> TODO()
-        is At -> TODO()
-        is AtAll -> TODO()
+        is AtAll -> block(e, element {
+            type = MsgElementType.AT
+            at = atElement {
+                uin = 0
+            }
+        })
 
-        is KritorSendElementTransformer -> e.toElement()
+        is Image -> when (e) {
+            is OfflineImage -> {
+                // 一个本地文件，用于发送
+                when (e) {
+                    is OfflineFileImage -> {}
+                    is OfflinePathImage -> {}
+                    is OfflineURIImage -> {
+                        val uri = e.uri
+                        if (uri.scheme == "file") {
+                            // 如果协议是 file: 那还是一个本地文件
+                            TODO("uri(scheme=file)")
+
+                        } else {
+                            block(e, element {
+                                type = MsgElementType.IMAGE
+                                imageElement {
+                                    this.url = uri.toASCIIString()
+                                }
+                            })
+                        }
+                    }
+
+                    is OfflineResourceImage -> {
+                        TODO()
+                    }
+
+                    else -> {
+                        block(e, element {
+                            type = MsgElementType.IMAGE
+                            imageElement {
+                                this.type
+                            }
+                        })
+
+                    }
+                }
+
+            }
+
+            is RemoteImage -> {
+                // 一个远端文件 ..?
+
+                TODO("RemoteImage")
+            }
+
+            else -> error("Unknown or unsupported image type") // TODO
+        }
+        // 其他？
+
+
     }
     // TODO  Message.resolveToKritorElements
 }
