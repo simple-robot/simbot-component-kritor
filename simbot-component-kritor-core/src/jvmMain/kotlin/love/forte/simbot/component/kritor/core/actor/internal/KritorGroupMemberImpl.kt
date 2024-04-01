@@ -2,6 +2,7 @@ package love.forte.simbot.component.kritor.core.actor.internal
 
 import io.kritor.group.GroupInfo
 import io.kritor.group.GroupMemberInfo
+import io.kritor.group.banMemberRequest
 import io.kritor.group.modifyMemberCardRequest
 import love.forte.simbot.ability.DeleteOption
 import love.forte.simbot.component.kritor.core.actor.KritorGroupMember
@@ -36,7 +37,15 @@ internal class KritorGroupMemberImpl(
     }
 
     override suspend fun ban(duration: Duration) {
-        TODO("Not yet implemented")
+        if (duration.isNegative && duration.isZero) {
+            throw IllegalArgumentException("Ban duration cannot be negative.")
+        }
+
+        bot.services.groupService.banMember(banMemberRequest {
+            this.groupId = sourceGroup.groupId
+            this.targetUid = source.uid
+            this.duration = duration.toMillis().toInt()
+        })
     }
 
     override suspend fun unban() {

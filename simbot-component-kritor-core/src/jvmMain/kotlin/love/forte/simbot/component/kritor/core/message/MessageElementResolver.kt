@@ -9,9 +9,11 @@ import io.kritor.message.*
 import love.forte.simbot.common.id.LongID.Companion.ID
 import love.forte.simbot.common.id.NumericalID
 import love.forte.simbot.common.id.StringID.Companion.ID
+import love.forte.simbot.common.id.UIntID.Companion.ID
 import love.forte.simbot.common.id.literal
 import love.forte.simbot.component.kritor.core.message.KritorBubbleFace.Companion.toKritorBubbleFace
 import love.forte.simbot.component.kritor.core.message.KritorFace.Companion.toKritorFace
+import love.forte.simbot.component.kritor.core.message.KritorPoke.Companion.toKritorPoke
 import love.forte.simbot.component.kritor.core.message.KritorReply.Companion.toKritorReply
 import love.forte.simbot.component.kritor.core.message.internal.unknownKritorMessageElement
 import love.forte.simbot.message.*
@@ -513,10 +515,13 @@ public fun EventElement.toMessage(): Message.Element {
         // ElementType.IMAGE -> TODO()
         // ElementType.VOICE -> TODO()
         // ElementType.VIDEO -> TODO()
-        // ElementType.BASKETBALL -> TODO()
-        // ElementType.DICE -> TODO()
-        // ElementType.RPS -> TODO()
-        // ElementType.POKE -> TODO()
+         ElementType.BASKETBALL -> KritorBasketball(ee.basketball.id.toUInt().ID)
+         ElementType.DICE -> KritorDice(ee.dice.id.toUInt().ID)
+         ElementType.RPS -> KritorRps(ee.poke.id.toUInt().ID)
+         ElementType.POKE -> {
+             val poke = ee.poke
+             poke.toKritorPoke()
+         }
         // ElementType.MUSIC -> TODO()
         // ElementType.WEATHER -> TODO()
         // ElementType.LOCATION -> TODO()
