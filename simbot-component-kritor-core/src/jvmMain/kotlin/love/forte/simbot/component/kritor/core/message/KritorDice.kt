@@ -16,7 +16,7 @@ import love.forte.simbot.message.EmoticonMessage
 public data class KritorDice(val id: UIntID):
     EmoticonMessage, KritorSendElementTransformer {
     override fun toElement(): Element = element {
-        type = ElementType.BASKETBALL
+        type = ElementType.DICE
         dice = diceElement {
             id = this@KritorDice.id.value.toInt()
         }

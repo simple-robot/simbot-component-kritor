@@ -16,7 +16,7 @@ import love.forte.simbot.message.EmoticonMessage
 public data class KritorRps(val id: UIntID):
     EmoticonMessage, KritorSendElementTransformer {
     override fun toElement(): Element = element {
-        type = ElementType.BASKETBALL
+        type = ElementType.RPS
         rps = rpsElement {
             id = this@KritorRps.id.value.toInt()
         }
