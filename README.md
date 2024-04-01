@@ -29,6 +29,9 @@ Simple Robot Kritor 组件是一个将
 [Simple Robot](http://github.com/simple-robot/simpler-robot) 标准API下实现的组件库，
 并由此提供simbot中的各项能力。
 
+> [!caution]
+> WIP now.
+
 ## 使用
 
 ## 文档
