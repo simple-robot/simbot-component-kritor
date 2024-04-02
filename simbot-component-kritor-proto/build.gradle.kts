@@ -12,7 +12,8 @@ dependencies {
     api(libs.kotlinx.coroutines.core)
     api(libs.grpc.stub)
     api(libs.grpc.protobuf)
-    api(libs.protobuf.java.util)
+    api(libs.protobuf.java)
+    // api(libs.protobuf.java.util)
     api(libs.protobuf.kotlin)
     api(libs.grpc.kotlin.stub)
 }
