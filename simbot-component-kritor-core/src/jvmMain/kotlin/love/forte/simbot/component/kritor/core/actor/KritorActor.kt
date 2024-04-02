@@ -12,15 +12,10 @@ import kotlin.coroutines.CoroutineContext
  *
  * @author ForteScarlet
  */
-public interface KritorActor<T> : Actor {
+public interface KritorActor : Actor {
     /**
      * 作为作用域的上下文。来自 [KritorBot]，但不含 [Job]。
      */
     override val coroutineContext: CoroutineContext
-
-    /**
-     * 此 [KritorActor] 的数据源头。
-     */
-    public val source: T
 }
 

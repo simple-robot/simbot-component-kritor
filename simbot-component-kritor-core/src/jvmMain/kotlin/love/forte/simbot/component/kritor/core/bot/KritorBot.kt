@@ -21,8 +21,8 @@ import love.forte.simbot.common.id.ID
 import love.forte.simbot.common.id.StringID
 import love.forte.simbot.common.id.ULongID
 import love.forte.simbot.component.kritor.core.AuthException
+import love.forte.simbot.component.kritor.core.KritorComponent
 import love.forte.simbot.component.kritor.core.actor.KritorGroup
-import love.forte.simbot.definition.ChatGroup
 import love.forte.simbot.suspendrunner.ST
 import love.forte.simbot.suspendrunner.STP
 import kotlin.coroutines.CoroutineContext
@@ -35,6 +35,7 @@ import kotlin.coroutines.CoroutineContext
  */
 public interface KritorBot : Bot {
     override val coroutineContext: CoroutineContext
+    override val component: KritorComponent
 
     /**
      * 注册Bot时使用的 [`account`][AuthReq.getAccount]。

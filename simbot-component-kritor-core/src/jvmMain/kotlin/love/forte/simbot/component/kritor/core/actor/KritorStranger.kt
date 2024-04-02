@@ -10,12 +10,17 @@ import love.forte.simbot.suspendrunner.ST
 
 public typealias KritorSourceStrangerInfo = StrangerInfo
 
+
+// TODO?
+
 /**
  * 一个陌生人的信息。
  *
  * @author ForteScarlet
  */
-public interface KritorStranger : KritorActor<KritorSourceStrangerInfo>, Contact {
+public interface KritorStranger : KritorActor, Contact {
+    public val source: KritorSourceStrangerInfo
+
     /**
      * 陌生人的 `uid`
      */

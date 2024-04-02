@@ -14,7 +14,9 @@ public typealias KritorSourceFriend = io.kritor.friend.FriendData
  *
  * @author ForteScarlet
  */
-public interface KritorFriend : Contact, KritorActor<KritorSourceFriend> {
+public interface KritorFriend : Contact, KritorActor {
+    public val source: KritorSourceFriend
+
     /**
      * 好友信息中的 `uid`
      *

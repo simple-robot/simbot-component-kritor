@@ -3,14 +3,56 @@ package love.forte.simbot.component.kritor.core.actor
 import io.kritor.group.GroupMemberInfo
 import love.forte.simbot.ability.DeleteOption
 import love.forte.simbot.ability.DeleteSupport
-import love.forte.simbot.common.id.ID
+import love.forte.simbot.ability.SendSupport
 import love.forte.simbot.common.id.StringID
 import love.forte.simbot.common.id.StringID.Companion.ID
 import love.forte.simbot.common.id.ULongID
 import love.forte.simbot.common.id.ULongID.Companion.ID
+import love.forte.simbot.component.kritor.core.message.KritorMessageReceipt
 import love.forte.simbot.definition.Member
+import love.forte.simbot.message.Message
+import love.forte.simbot.message.MessageContent
 import love.forte.simbot.suspendrunner.ST
 import java.time.Duration
+
+/**
+ * 一个在 [KritorSenderInfo] 所能够提供的信息的基础上提供最低限度功能的群成员信息类型。
+ */
+public interface KritorBasicGroupMemberInfo : KritorSenderInfo, DeleteSupport, SendSupport {
+
+    /**
+     * 向此成员发送消息
+     *
+     * @throws Exception 任何gRPC可能产生的异常
+     */
+    @ST
+    override suspend fun send(messageContent: MessageContent): KritorMessageReceipt
+
+    /**
+     * 向此成员发送消息
+     *
+     * @throws Exception 任何gRPC可能产生的异常
+     */
+    @ST
+    override suspend fun send(message: Message): KritorMessageReceipt
+
+    /**
+     * 向此成员发送消息
+     *
+     * @throws Exception 任何gRPC可能产生的异常
+     */
+    @ST
+    override suspend fun send(text: String): KritorMessageReceipt
+
+    /**
+     * 踢出此成员。
+     * [options] 中可以额外使用 [KritorGroupMemberDeleteOption] 提供的可选项。
+     *
+     * @see KritorGroupMemberDeleteOption
+     */
+    @JvmSynthetic
+    override suspend fun delete(vararg options: DeleteOption)
+}
 
 
 /**
@@ -18,7 +60,9 @@ import java.time.Duration
  *
  * @author ForteScarlet
  */
-public interface KritorGroupMember : Member, KritorActor<GroupMemberInfo>, DeleteSupport {
+public interface KritorGroupMember : Member, KritorActor, DeleteSupport, KritorSenderInfo {
+    public val source: GroupMemberInfo
+
     /**
      * 群成员信息中的 `uid`
      */
@@ -29,7 +73,7 @@ public interface KritorGroupMember : Member, KritorActor<GroupMemberInfo>, Delet
      * 群成员信息中的 `uin`
      * @see GroupMemberInfo.getUin
      */
-    public val uin: ULongID
+    override val uin: ULongID
         get() = source.uin.toULong().ID
 
     /**
@@ -39,7 +83,8 @@ public interface KritorGroupMember : Member, KritorActor<GroupMemberInfo>, Delet
         get() = source.nick
 
     /**
-     * 群成员群昵称
+     * 群成员群昵称。
+     * [modifyNick] 修改成功后会随之发生变化。
      */
     override val nick: String
 
@@ -94,7 +139,8 @@ public interface KritorGroupMember : Member, KritorActor<GroupMemberInfo>, Delet
     public suspend fun poke()
 
     /**
-     * 踢出此成员。可以额外使用 [KritorGroupMemberDeleteOption] 提供的可选项。
+     * 踢出此成员。
+     * [options] 中可以额外使用 [KritorGroupMemberDeleteOption] 提供的可选项。
      *
      * @see KritorGroupMemberDeleteOption
      */

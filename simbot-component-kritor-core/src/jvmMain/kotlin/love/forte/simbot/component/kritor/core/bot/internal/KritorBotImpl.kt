@@ -18,7 +18,6 @@ import io.kritor.event.requestPushEvent
 import io.kritor.file.GroupFileServiceGrpcKt
 import io.kritor.friend.FriendServiceGrpcKt
 import io.kritor.group.GroupServiceGrpcKt
-import io.kritor.group.getGroupInfoRequest
 import io.kritor.group.getGroupListRequest
 import io.kritor.guild.GuildServiceGrpcKt
 import io.kritor.message.ForwardMessageServiceGrpcKt
@@ -165,13 +164,13 @@ internal class KritorBotImpl(
             val groupIdValue = (id as? NumericalID)?.toLong() ?: id.literal.toLong()
 
             return kotlin.runCatching {
-                services.groupService.getGroupInfo(getGroupInfoRequest {
+                this@KritorBotImpl.getGroupInfo {
                     this.groupId = groupIdValue
-                })
+                }
             }.getOrElse { e ->
                 val status = Status.fromThrowable(e)
                 if (status.code == Status.Code.NOT_FOUND) null else throw e
-            }?.groupInfo?.toGroup(this@KritorBotImpl)
+            }?.toGroup(this@KritorBotImpl)
         }
     }
 
@@ -188,7 +187,7 @@ internal class KritorBotImpl(
                 // runCatching {
                 //
                 // }
-                TODO()
+                TODO("eventStructure: $eventStructure")
 
             }
     }
@@ -222,3 +221,5 @@ internal class ServicesImpl(
     override val guildService = GuildServiceGrpcKt.GuildServiceCoroutineStub(channel)
     override val messageService = MessageServiceGrpcKt.MessageServiceCoroutineStub(channel)
 }
+
+

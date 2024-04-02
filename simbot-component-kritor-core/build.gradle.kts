@@ -26,6 +26,7 @@ kotlin {
             dependencies {
                 // compileOnly.
                 compileOnly(libs.simbot.api)
+                compileOnly(libs.simbot.common.annotations)
                 api(project(":simbot-component-kritor-proto"))
             }
         }
