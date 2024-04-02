@@ -24,6 +24,11 @@ public data class KritorSourceMessageElement(
     override fun toElement(): Element = source
 }
 
+/**
+ * 将 [Element] 以 protobuf 的形式直接作为二进制数据序列化的序列化器。
+ *
+ * @author ForteScarlet
+ */
 public object KritorElementSerializer : KSerializer<Element> {
     override fun deserialize(decoder: Decoder): Element {
         val bytes = ByteArraySerializer().deserialize(decoder)
