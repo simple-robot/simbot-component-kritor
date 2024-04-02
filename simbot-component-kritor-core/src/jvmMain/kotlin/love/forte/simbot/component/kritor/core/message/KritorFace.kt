@@ -20,20 +20,27 @@ public data class KritorFace(val id: UIntID, val isBig: Boolean = false, val res
     KritorSendElementTransformer {
     public companion object {
         /**
-         * 使用 [FaceElement] 构建一个 [KritorFace]。
+         * 使用 [io.kritor.event.FaceElement] 构建一个 [KritorFace]。
          */
         @JvmStatic
         @JvmName("valueOf")
         public fun io.kritor.event.FaceElement.toKritorFace(): KritorFace {
             return KritorFace(id.toUInt().ID, isBig, if (hasResult()) result else null)
         }
-    }
 
-    public constructor(source: FaceElement) : this(
-        source.id.toUInt().ID,
-        source.isBig,
-        if (source.hasResult()) source.result else null
-    )
+        /**
+         * 使用 [FaceElement] 构建一个 [KritorFace]。
+         */
+        @JvmStatic
+        @JvmName("valueOf")
+        public fun FaceElement.toKritorFace(): KritorFace {
+            return KritorFace(
+                id.toUInt().ID,
+                isBig,
+                if (hasResult()) result else null
+            )
+        }
+    }
 
     override fun toElement(): Element {
         return element {
