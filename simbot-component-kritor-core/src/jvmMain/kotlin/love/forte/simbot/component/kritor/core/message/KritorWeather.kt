@@ -15,13 +15,13 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 @SerialName("kritor.m.weather")
-public data class KritorWeather(val city: String, val id: String) :
+public data class KritorWeather(val city: String, val code: String) :
     KritorMessageElement, KritorSendElementTransformer {
     override fun toElement(): Element = element {
         type = ElementType.WEATHER
         weather = weatherElement {
-            this@KritorWeather.city
-            this@KritorWeather.id
+            city = this@KritorWeather.city
+            code = this@KritorWeather.code
         }
     }
 }
