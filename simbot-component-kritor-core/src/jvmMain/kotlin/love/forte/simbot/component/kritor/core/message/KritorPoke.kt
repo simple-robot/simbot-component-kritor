@@ -17,7 +17,7 @@ public data class KritorPoke(val id: UIntID, val type: Int, val strength: Int):
     KritorMessageElement, KritorSendElementTransformer {
     public companion object {
         @JvmStatic
-        @JvmName("valueof")
+        @JvmName("valueOf")
         public fun io.kritor.event.PokeElement.toKritorPoke(): KritorPoke {
             return KritorPoke(id.toUInt().ID, type, strength)
         }
@@ -30,5 +30,5 @@ public data class KritorPoke(val id: UIntID, val type: Int, val strength: Int):
             strength = this@KritorPoke.strength
         }
 
-   }
+    }
 }
