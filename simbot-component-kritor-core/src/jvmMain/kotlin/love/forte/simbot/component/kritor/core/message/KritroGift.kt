@@ -6,9 +6,8 @@ import io.kritor.message.element
 import io.kritor.message.giftElement
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import love.forte.simbot.common.id.ID
 import love.forte.simbot.common.id.UIntID
-import love.forte.simbot.common.id.toLong
+import love.forte.simbot.common.id.ULongID
 
 /**
  *
@@ -18,9 +17,9 @@ import love.forte.simbot.common.id.toLong
  */
 @Serializable
 @SerialName("kritor.m.gift")
-public data class KritorGift(val qq: ID, var id: UIntID) :
-        KritorMessageElement,
-        KritorSendElementTransformer {
+public data class KritorGift(val qq: ULongID, var id: UIntID) :
+    KritorMessageElement,
+    KritorSendElementTransformer {
     override fun toElement(): Element = element {
         type = ElementType.GIFT
         gift = giftElement {
