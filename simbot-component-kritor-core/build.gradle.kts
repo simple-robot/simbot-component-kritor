@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
+    alias(libs.plugins.ksp)
 }
 
 useK2()
@@ -41,17 +42,25 @@ kotlin {
     }
 }
 
-// repositories {
-//     mavenCentral()
+// KSP
+dependencies {
+    add("kspJvm", project(":internal-processors:include-component-message-elements-processor"))
+}
+
+// see https://github.com/google/ksp/issues/567#issuecomment-1510477456
+// tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>>().configureEach {
+//     if(name != "kspCommonMainKotlinMetadata") {
+//         dependsOn("kspCommonMainKotlinMetadata")
+//     }
 // }
 //
-// dependencies {
-//     testImplementation("org.jetbrains.kotlin:kotlin-test")
+// kotlin.sourceSets.commonMain {
+//     kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
 // }
-//
-// tasks.test {
-//     useJUnitPlatform()
+
+// tasks.withType<DokkaTaskPartial>().configureEach {
+//     dokkaSourceSets.configureEach {
+//         suppressGeneratedFiles.set(false)
+//     }
 // }
-// kotlin {
-//     jvmToolchain(21)
-// }
+

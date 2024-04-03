@@ -3,6 +3,7 @@ plugins {
 }
 rootProject.name = "simbot-component-kritor"
 
+include("internal-processors:include-component-message-elements-processor")
 // include(":proto")
 include(":simbot-component-kritor-proto")
 include(":simbot-component-kritor-core")

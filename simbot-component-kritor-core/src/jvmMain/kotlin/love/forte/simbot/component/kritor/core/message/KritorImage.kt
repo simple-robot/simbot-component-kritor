@@ -58,7 +58,7 @@ import love.forte.simbot.message.RemoteImage
  *
  * @author ForteScarlet
  */
-public sealed interface KritorImage : Image
+public sealed interface KritorImage : KritorMessageElement, Image
 
 
 /**

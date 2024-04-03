@@ -9,6 +9,7 @@ import love.forte.simbot.component.Component
 import love.forte.simbot.component.ComponentConfigureContext
 import love.forte.simbot.component.ComponentFactory
 import love.forte.simbot.component.kritor.core.bot.SerializableKritorBotConfiguration
+import love.forte.simbot.message.messageElementPolymorphic
 
 
 /**
@@ -42,6 +43,11 @@ public class KritorComponent : Component {
         public val SerializersModule: SerializersModule = SerializersModule {
             serializableBotConfigurationPolymorphic {
                 subclass(SerializableKritorBotConfiguration.serializer())
+            }
+
+            messageElementPolymorphic {
+                // 所有 KritorMessageElement 的序列化信息
+                includeAllComponentMessageElementImpls()
             }
         }
 

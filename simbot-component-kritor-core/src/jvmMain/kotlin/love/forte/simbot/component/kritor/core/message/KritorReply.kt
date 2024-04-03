@@ -1,17 +1,20 @@
 package love.forte.simbot.component.kritor.core.message
 
-import io.kritor.message.Element
-import io.kritor.message.ElementType
-import io.kritor.message.element
-import io.kritor.message.replyElement
+import io.kritor.message.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import love.forte.simbot.common.id.ULongID
 import love.forte.simbot.common.id.ULongID.Companion.ID
 
 
 /**
+ * Kritor 的消息引用/回复
  *
+ * @see ReplyElement
  * @author ForteScarlet
  */
+@Serializable
+@SerialName("kritor.m.reply")
 public data class KritorReply(val messageId: ULongID) : KritorMessageElement, KritorSendElementTransformer {
     public companion object {
         /**
