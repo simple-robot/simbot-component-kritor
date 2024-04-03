@@ -57,12 +57,7 @@ public class KritorMusic private constructor(
         @JvmStatic
         @JvmName("valueOf")
         public fun io.kritor.event.MusicElementOrBuilder.toKritorMusic(): KritorMusic {
-            val platform = when(requireNotNull(platform){ "Required `platform` was null." }) {
-                io.kritor.event.MusicPlatform.QQ -> MusicPlatform.QQ
-                io.kritor.event.MusicPlatform.NetEase -> MusicPlatform.NetEase
-                io.kritor.event.MusicPlatform.Custom -> MusicPlatform.Custom
-                io.kritor.event.MusicPlatform.UNRECOGNIZED -> MusicPlatform.UNRECOGNIZED
-            }
+            val platform = getPlatform().resolve()
             val id = if (hasId()) id.ID else null
             val custom = if (hasCustom()) customMusicData {
                 this@toKritorMusic.custom.url
