@@ -30,6 +30,14 @@ kotlin {
                 api(project(":simbot-component-kritor-proto"))
             }
         }
+
+        jvmTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.mockk)
+            implementation(libs.log4j.api)
+            implementation(libs.log4j.core)
+            implementation(libs.log4j.slf4j2)
+        }
     }
 }
 
