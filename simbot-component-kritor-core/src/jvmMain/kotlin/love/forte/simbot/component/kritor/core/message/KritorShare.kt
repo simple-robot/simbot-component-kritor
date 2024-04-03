@@ -29,6 +29,7 @@ public data class KritorShare(
             return KritorShare(url, title, content, image)
         }
     }
+
     override fun toElement(): Element = element {
         type = ElementType.SHARE
         share = shareElement {

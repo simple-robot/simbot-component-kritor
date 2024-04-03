@@ -20,8 +20,5 @@ public data class KritorMarketFace(val id: ID, val markdown: String) :
         marketFace = marketFaceElement {
             this@KritorMarketFace.id
         }
-        markdown = markdownElement {
-            this@KritorMarketFace.markdown
-        }
     }
 }

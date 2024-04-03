@@ -13,7 +13,7 @@ import love.forte.simbot.common.id.UIntID.Companion.ID
  */
 @Serializable
 @SerialName("kritor.m.poke")
-public data class KritorPoke(val id: UIntID, val type: Int, val strength: Int):
+public data class KritorPoke(val id: UIntID, val type: Int, val strength: Int) :
     KritorMessageElement, KritorSendElementTransformer {
     public companion object {
         @JvmStatic
@@ -22,6 +22,7 @@ public data class KritorPoke(val id: UIntID, val type: Int, val strength: Int):
             return KritorPoke(id.toUInt().ID, type, strength)
         }
     }
+
     override fun toElement(): Element = element {
         type = ElementType.POKE
         poke = pokeElement {
