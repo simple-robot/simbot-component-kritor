@@ -13,7 +13,9 @@ import love.forte.simbot.common.id.UIntID.Companion.ID
 import love.forte.simbot.common.id.ULongID.Companion.ID
 import love.forte.simbot.common.id.literal
 import love.forte.simbot.component.kritor.core.message.KritorBubbleFace.Companion.toKritorBubbleFace
+import love.forte.simbot.component.kritor.core.message.KritorContact.Companion.toKritorContact
 import love.forte.simbot.component.kritor.core.message.KritorFace.Companion.toKritorFace
+import love.forte.simbot.component.kritor.core.message.KritorForward.Companion.toKritorForward
 import love.forte.simbot.component.kritor.core.message.KritorLocation.Companion.toKritorLocation
 import love.forte.simbot.component.kritor.core.message.KritorMusic.Companion.toKritorMusic
 import love.forte.simbot.component.kritor.core.message.KritorPoke.Companion.toKritorPoke
@@ -528,9 +530,9 @@ public fun EventElement.toMessage(): Message.Element {
          ElementType.LOCATION -> { ee.location.toKritorLocation() }
          ElementType.SHARE -> { ee.share.toKritorShare() }
          ElementType.GIFT -> KritorGift(ee.gift.qq.toULong().ID, ee.gift.id.toUInt().ID)
-        // ElementType.MARKET_FACE -> TODO()
-        // ElementType.FORWARD -> TODO()
-        // ElementType.CONTACT -> TODO()
+         ElementType.MARKET_FACE -> KritorMarketFace(ee.marketFace.id, ee.markdown.markdown)
+         ElementType.FORWARD -> { ee.forward.toKritorForward() }
+         ElementType.CONTACT -> { ee.contact.toKritorContact() }
         ElementType.JSON -> KritorJson(ee.json.json)
         ElementType.XML -> KritorXml(ee.xml.xml)
         // ElementType.FILE -> TODO()
