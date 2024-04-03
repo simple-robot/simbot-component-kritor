@@ -16,7 +16,7 @@ import love.forte.simbot.message.EmoticonMessage
  */
 @Serializable
 @SerialName("kritor.m.basketball")
-public data class KritorBasketball(val id: UIntID):
+public data class KritorBasketball(val id: UIntID) :
     EmoticonMessage, KritorSendElementTransformer {
     override fun toElement(): Element = element {
         type = ElementType.BASKETBALL
