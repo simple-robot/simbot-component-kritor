@@ -76,11 +76,17 @@ internal inline fun Message.Element.resolveToKritorElements(block: (Message.Elem
         })
 
         is Image -> when (e) {
+            //   oneof data {
+            //     string file_name = 1; // 图片文件名
+            //     string file_path = 3;// 图片绝对路径
+            //     string file_base64 = 5;// 文件base64，不需要base://开头
+            //     string url = 2; // 文件下载地址
+            //   }
             is OfflineImage -> {
                 // 一个本地文件，用于发送
                 when (e) {
-                    is OfflineFileImage -> {}
-                    is OfflinePathImage -> {}
+                    is OfflineFileImage -> {} // TODO
+                    is OfflinePathImage -> {} // TODO
                     is OfflineURIImage -> {
                         val uri = e.uri
                         if (uri.scheme == "file") {
@@ -102,9 +108,11 @@ internal inline fun Message.Element.resolveToKritorElements(block: (Message.Elem
                     }
 
                     else -> {
+                        // TODO
+
                         block(e, element {
                             type = MsgElementType.IMAGE
-                            imageElement {
+                            image = imageElement {
                                 this.type
                             }
                         })
