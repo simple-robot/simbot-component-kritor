@@ -20,6 +20,11 @@ import java.time.Duration
  */
 public interface KritorBasicGroupMemberInfo : KritorSenderInfo, DeleteSupport, SendSupport {
 
+    // TODO ban?
+    // TODO unban?
+    // TODO poke?
+    // TODO
+
     /**
      * 向此成员发送消息
      *
@@ -140,7 +145,16 @@ public interface KritorGroupMember : Member, KritorActor, DeleteSupport, KritorS
 
     /**
      * 踢出此成员。
-     * [options] 中可以额外使用 [KritorGroupMemberDeleteOption] 提供的可选项。
+     * [options] 中还可以额外使用 [KritorGroupMemberDeleteOption] 提供的可选项。
+     *
+     * 例如：
+     * ```kotlin
+     * delete(
+     *     StandardDeleteOption.IGNORE_ON_FAILURE,
+     *     KritorGroupMemberDeleteOption.RejectAddRequest,
+     *     KritorGroupMemberDeleteOption.kickReason("reason"),
+     * )
+     * ```
      *
      * @see KritorGroupMemberDeleteOption
      */
@@ -154,12 +168,6 @@ public interface KritorGroupMember : Member, KritorActor, DeleteSupport, KritorS
      */
     @ST
     public suspend fun setAdmin(isAdmin: Boolean)
-
-    /**
-     * 获取 `@全体成员` 剩余次数
-     */
-    @ST
-    public suspend fun getRemainCountAtAll(): RemainCountAtAll
 }
 
 
@@ -191,22 +199,30 @@ public sealed class KritorGroupMemberDeleteOption : DeleteOption {
         @JvmStatic
         public fun kickReason(reason: String): KritorGroupMemberDeleteOption = KickReason(reason)
     }
+
+    /**
+     * 针对 [KritorGroupMemberDeleteOption] 的聚合分析器。
+     */
+    public class Analyzer {
+        /**
+         * 是否标记了 [RejectAddRequest].
+         */
+        public var isRejectAddRequest: Boolean = false
+            private set
+
+        /**
+         * 拒绝理由（如果有的话）
+         */
+        public var kickReason: String? = null
+            private set
+
+        public fun analysis(option: DeleteOption) {
+            when (option) {
+                RejectAddRequest -> isRejectAddRequest = true
+                is KickReason -> kickReason = option.reason
+            }
+        }
+    }
 }
 
 
-/**
- * `@全体成员` 剩余次数信息
- */
-public interface RemainCountAtAll {
-    public val accessAtAll: Boolean
-
-    /**
-     * 剩余次数对于全群
-     */
-    public val forGroup: Int
-
-    /**
-     * 剩余次数对于自己
-     */
-    public val forSelf: Int
-}

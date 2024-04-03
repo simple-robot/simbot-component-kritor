@@ -17,6 +17,9 @@ import love.forte.simbot.suspendrunner.STP
  * 一个在 [KritorContactInfo] 所能够提供的信息的基础上提供最低限度功能的群信息类型。
  */
 public interface KritorBasicGroupInfo : KritorContactInfo, SendSupport, DeleteSupport {
+    // TODO members API ?
+    // TODO resolve(): KritorGroup ?
+
     /**
      * 得到 [KritorMemberRole] 的所有元素值。
      */
@@ -182,5 +185,28 @@ public interface KritorGroup : ChatGroup, KritorActor, DeleteSupport {
      */
     @ST
     override suspend fun send(text: String): KritorMessageReceipt
+
+    /**
+     * 获取 `@全体成员` 剩余次数
+     */
+    @ST
+    public suspend fun getRemainCountAtAll(): RemainCountAtAll
 }
 
+
+/**
+ * `@全体成员` 剩余次数信息
+ */
+public interface RemainCountAtAll {
+    public val accessAtAll: Boolean
+
+    /**
+     * 剩余次数对于全群
+     */
+    public val forGroup: Int
+
+    /**
+     * 剩余次数对于自己
+     */
+    public val forSelf: Int
+}

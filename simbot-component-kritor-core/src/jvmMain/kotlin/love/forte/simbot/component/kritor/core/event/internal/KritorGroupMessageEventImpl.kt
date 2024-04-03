@@ -2,15 +2,14 @@ package love.forte.simbot.component.kritor.core.event.internal
 
 import io.kritor.event.EventStructure
 import io.kritor.event.MessageEvent
+import io.kritor.group.getGroupMemberInfoRequest
 import io.kritor.message.*
 import love.forte.simbot.common.id.ID
 import love.forte.simbot.common.id.StringID.Companion.ID
 import love.forte.simbot.common.id.UUID
 import love.forte.simbot.component.kritor.core.actor.KritorGroup
 import love.forte.simbot.component.kritor.core.actor.KritorGroupMember
-import love.forte.simbot.component.kritor.core.actor.internal.KritorBasicGroupEventInfoImpl
-import love.forte.simbot.component.kritor.core.actor.internal.toGroup
-import love.forte.simbot.component.kritor.core.actor.internal.toGroupInfo
+import love.forte.simbot.component.kritor.core.actor.internal.*
 import love.forte.simbot.component.kritor.core.bot.internal.KritorBotImpl
 import love.forte.simbot.component.kritor.core.bot.internal.getGroupInfo
 import love.forte.simbot.component.kritor.core.bot.internal.sendMessage
@@ -35,6 +34,7 @@ internal class KritorGroupMessageEventImpl(
 ) : KritorGroupMessageEvent {
     override val id: ID = UUID.random()
     override val groupInfo: KritorBasicGroupEventInfoImpl = sourceEvent.contact.toGroupInfo(bot)
+    override val authorInfo: KritorBasicEventGroupMemberImpl = sourceEvent.toMemberInfoImpl(bot)
 
     override val authorId: ID
         get() = sourceEvent.sender.uid.ID
@@ -44,7 +44,13 @@ internal class KritorGroupMessageEventImpl(
     }
 
     override suspend fun author(): KritorGroupMember {
-        TODO("Not yet implemented")
+        // find groupMemberInfo
+        val info = bot.services.groupService.getGroupMemberInfo(getGroupMemberInfoRequest {
+            this.groupId = groupInfo.groupId
+            this.uid = sourceEvent.sender.uid
+        }).groupMemberInfo
+
+        return info.toMember(bot, groupInfo.groupId)
     }
 
     override suspend fun content(): KritorGroup {

@@ -18,6 +18,7 @@ import love.forte.simbot.common.id.ULongID.Companion.ID
 import love.forte.simbot.component.kritor.core.actor.KritorBasicGroupInfo
 import love.forte.simbot.component.kritor.core.actor.KritorGroup
 import love.forte.simbot.component.kritor.core.actor.KritorGroupMember
+import love.forte.simbot.component.kritor.core.actor.RemainCountAtAll
 import love.forte.simbot.component.kritor.core.bot.internal.KritorBotImpl
 import love.forte.simbot.component.kritor.core.bot.internal.sendMessage
 import love.forte.simbot.component.kritor.core.message.KritorMessageReceipt
@@ -153,7 +154,7 @@ internal class KritorGroupInfoImpl(
             }
 
             for (memberInfo in resp.groupMemberInfoList) {
-                emit(memberInfo.toMember(bot, source))
+                emit(memberInfo.toMember(bot, source.groupId))
             }
         }
 
@@ -173,7 +174,7 @@ internal class KritorGroupInfoImpl(
             if (status.code == Code.NOT_FOUND) null else throw e
         }
 
-        return memberInfo?.groupMemberInfo?.toMember(bot, source)
+        return memberInfo?.groupMemberInfo?.toMember(bot, source.groupId)
     }
 
     override suspend fun botAsMember(): KritorGroupMember = with(bot.currentAccount.accountUin.ID) {
@@ -195,7 +196,32 @@ internal class KritorGroupInfoImpl(
     override suspend fun send(text: String): KritorMessageReceipt =
         sourceGroupInfo.send(text)
 
+    override suspend fun getRemainCountAtAll(): RemainCountAtAll {
+        val result = bot.services.groupService.getRemainCountAtAll(getRemainCountAtAllRequest {
+            this.groupId = source.groupId
+        })
+
+        return RemainCountAtAllImpl(
+            accessAtAll = result.accessAtAll,
+            forGroup = result.remainCountForGroup,
+            forSelf = result.remainCountForSelf,
+        )
+    }
 }
 
-internal fun GroupInfo.toGroup(bot: KritorBotImpl, groupInfoImpl: AbstractKritorBasicGroupInfoImpl = toGroupInfo(bot)): KritorGroupInfoImpl =
+private data class RemainCountAtAllImpl(
+    override val accessAtAll: Boolean,
+    override val forGroup: Int,
+    override val forSelf: Int
+) : RemainCountAtAll {
+    override fun toString(): String {
+        return "RemainCountAtAll(accessAtAll=$accessAtAll, forGroup=$forGroup, forSelf=$forSelf)"
+    }
+}
+
+
+internal fun GroupInfo.toGroup(
+    bot: KritorBotImpl,
+    groupInfoImpl: AbstractKritorBasicGroupInfoImpl = toGroupInfo(bot)
+): KritorGroupInfoImpl =
     KritorGroupInfoImpl(bot, this, groupInfoImpl)
