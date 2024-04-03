@@ -14,7 +14,7 @@ import love.forte.simbot.common.id.ID
 @Serializable
 @SerialName("kritor.m.makertface")
 public data class KritorMarketFace(val id: ID, val markdown: String) :
-        KritorMessageElement, KritorSendElementTransformer {
+    KritorMessageElement, KritorSendElementTransformer {
     override fun toElement(): Element = element {
         type = ElementType.MARKET_FACE
         marketFace = marketFaceElement {

@@ -14,10 +14,7 @@ import love.forte.simbot.common.id.StringID.Companion.ID
 @Serializable
 @SerialName("kritor.m.forward")
 public data class KritorForward(
-    val id: ID,
-    val uniseq: String,
-    val summary: String,
-    val description: String
+    val id: ID, val uniseq: String, val summary: String, val description: String
 ) : KritorMessageElement, KritorSendElementTransformer {
 
     public companion object {
