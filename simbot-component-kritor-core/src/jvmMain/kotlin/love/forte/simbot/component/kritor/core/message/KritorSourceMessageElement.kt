@@ -1,6 +1,8 @@
 package love.forte.simbot.component.kritor.core.message
 
 import io.kritor.message.Element
+import io.kritor.message.ElementKt
+import io.kritor.message.element
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ByteArraySerializer
@@ -41,3 +43,18 @@ public object KritorElementSerializer : KSerializer<Element> {
         return ByteArraySerializer().serialize(encoder, value.toByteArray())
     }
 }
+
+
+/**
+ * 使用 [ElementKt.Dsl] 构建一个 [KritorSourceMessageElement].
+ *
+ * ```Kotlin
+ * createKritorSourceMessageElement {
+ *     type = ...
+ *     ...
+ * }
+ * ```
+ *
+ */
+public inline fun createKritorSourceMessageElement(block: ElementKt.Dsl.() -> Unit): KritorSourceMessageElement =
+    KritorSourceMessageElement(element(block))
