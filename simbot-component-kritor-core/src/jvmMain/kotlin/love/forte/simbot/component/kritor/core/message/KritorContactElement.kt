@@ -28,15 +28,7 @@ public class KritorContactElement private constructor(
                 @JvmStatic
                 @JvmName("valueOf")
                 public fun io.kritor.event.ContactElementOrBuilder.toKritorContact(): KritorContactElement {
-                   val scene = when(requireNotNull(scene){ "Required `scene` was null." }) {
-                       io.kritor.event.Scene.FRIEND -> Scene.FRIEND
-                       io.kritor.event.Scene.GROUP -> Scene.GROUP
-                       io.kritor.event.Scene.UNRECOGNIZED -> Scene.UNRECOGNIZED
-                       io.kritor.event.Scene.NEARBY -> Scene.NEARBY
-                       io.kritor.event.Scene.GUILD -> Scene.GUILD
-                       io.kritor.event.Scene.STRANGER -> Scene.STRANGER
-                       io.kritor.event.Scene.STRANGER_FROM_GROUP -> Scene.STRANGER_FROM_GROUP
-                   }
+                   val scene = getScene().resolve()
                     return KritorContactElement(scene, peer)
                    }
 
