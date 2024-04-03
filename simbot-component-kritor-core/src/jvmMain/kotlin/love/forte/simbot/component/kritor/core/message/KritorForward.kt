@@ -3,6 +3,8 @@ package love.forte.simbot.component.kritor.core.message
 import io.kritor.message.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import love.forte.simbot.common.id.ID
+import love.forte.simbot.common.id.StringID.Companion.ID
 
 
 /**
@@ -12,13 +14,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 @SerialName("kritor.m.forward")
 public data class KritorForward(
-    val id: String,
+    val id: ID,
     val uniseq: String,
     val summary: String,
     val description: String
-) :
-        KritorMessageElement,
-        KritorSendElementTransformer {
+) : KritorMessageElement, KritorSendElementTransformer {
 
     public companion object {
         /**
@@ -27,7 +27,7 @@ public data class KritorForward(
         @JvmStatic
         @JvmName("valueOf")
         public fun io.kritor.event.ForwardElement.toKritorForward(): KritorForward {
-            return KritorForward(id, uniseq, summary, description)
+            return KritorForward(id.ID, uniseq, summary, description)
         }
 
         /**
@@ -36,7 +36,7 @@ public data class KritorForward(
         @JvmStatic
         @JvmName("valueOf")
         public fun ForwardElement.toKritorForward(): KritorForward {
-            return KritorForward(id, uniseq, summary, description)
+            return KritorForward(id.ID, uniseq, summary, description)
         }
     }
 

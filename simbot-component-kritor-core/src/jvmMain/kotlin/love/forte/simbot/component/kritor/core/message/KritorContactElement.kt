@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 @SerialName("kritor.m.contact")
-public class KritorContact private constructor(
+public class KritorContactElement private constructor(
     /**
      * 场景
      *
@@ -23,11 +23,11 @@ public class KritorContact private constructor(
 ) : KritorMessageElement, KritorSendElementTransformer {
             public companion object {
                 /**
-                 * 使用 [io.kritor.event.ContactElementOrBuilder] 构建 [KritorContact].
+                 * 使用 [io.kritor.event.ContactElementOrBuilder] 构建 [KritorContactElement].
                  */
                 @JvmStatic
                 @JvmName("valueOf")
-                public fun io.kritor.event.ContactElementOrBuilder.toKritorContact(): KritorContact {
+                public fun io.kritor.event.ContactElementOrBuilder.toKritorContact(): KritorContactElement {
                    val scene = when(requireNotNull(scene){ "Required `scene` was null." }) {
                        io.kritor.event.Scene.FRIEND -> Scene.FRIEND
                        io.kritor.event.Scene.GROUP -> Scene.GROUP
@@ -37,24 +37,24 @@ public class KritorContact private constructor(
                        io.kritor.event.Scene.STRANGER -> Scene.STRANGER
                        io.kritor.event.Scene.STRANGER_FROM_GROUP -> Scene.STRANGER_FROM_GROUP
                    }
-                    return KritorContact(scene, peer)
+                    return KritorContactElement(scene, peer)
                    }
 
                 /**
-                 * 使用[ContactElement] 构建 [KritorContact]
+                 * 使用[ContactElement] 构建 [KritorContactElement]
                  */
                 @JvmStatic
                 @JvmName("valueOf")
-                public fun ContactElement.toKritorContact() : KritorContact {
-                    return KritorContact(scene, peer)
+                public fun ContactElement.toKritorContact() : KritorContactElement {
+                    return KritorContactElement(scene, peer)
                 }
             }
 
     override fun toElement(): Element = element{
         type = ElementType.CONTACT
         contact = contactElement {
-            this@KritorContact.scene
-            this@KritorContact.peer
+            this@KritorContactElement.scene
+            this@KritorContactElement.peer
         }
     }
 }

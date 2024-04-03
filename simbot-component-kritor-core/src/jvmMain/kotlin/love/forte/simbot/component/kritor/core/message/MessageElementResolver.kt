@@ -13,7 +13,7 @@ import love.forte.simbot.common.id.UIntID.Companion.ID
 import love.forte.simbot.common.id.ULongID.Companion.ID
 import love.forte.simbot.common.id.literal
 import love.forte.simbot.component.kritor.core.message.KritorBubbleFace.Companion.toKritorBubbleFace
-import love.forte.simbot.component.kritor.core.message.KritorContact.Companion.toKritorContact
+import love.forte.simbot.component.kritor.core.message.KritorContactElement.Companion.toKritorContact
 import love.forte.simbot.component.kritor.core.message.KritorFace.Companion.toKritorFace
 import love.forte.simbot.component.kritor.core.message.KritorForward.Companion.toKritorForward
 import love.forte.simbot.component.kritor.core.message.KritorLocation.Companion.toKritorLocation
@@ -524,15 +524,15 @@ public fun EventElement.toMessage(): Message.Element {
          ElementType.BASKETBALL -> KritorBasketball(ee.basketball.id.toUInt().ID)
          ElementType.DICE -> KritorDice(ee.dice.id.toUInt().ID)
          ElementType.RPS -> KritorRps(ee.poke.id.toUInt().ID)
-         ElementType.POKE -> { ee.poke.toKritorPoke() }
-         ElementType.MUSIC -> { ee.music.toKritorMusic() }
+         ElementType.POKE -> ee.poke.toKritorPoke()
+         ElementType.MUSIC -> ee.music.toKritorMusic()
          ElementType.WEATHER -> KritorWeather(ee.weather.city, ee.weather.code)
-         ElementType.LOCATION -> { ee.location.toKritorLocation() }
-         ElementType.SHARE -> { ee.share.toKritorShare() }
+         ElementType.LOCATION -> ee.location.toKritorLocation()
+         ElementType.SHARE -> ee.share.toKritorShare()
          ElementType.GIFT -> KritorGift(ee.gift.qq.toULong().ID, ee.gift.id.toUInt().ID)
-         ElementType.MARKET_FACE -> KritorMarketFace(ee.marketFace.id, ee.markdown.markdown)
-         ElementType.FORWARD -> { ee.forward.toKritorForward() }
-         ElementType.CONTACT -> { ee.contact.toKritorContact() }
+         ElementType.MARKET_FACE -> KritorMarketFace(ee.marketFace.id.ID, ee.markdown.markdown)
+         ElementType.FORWARD -> ee.forward.toKritorForward()
+         ElementType.CONTACT ->  ee.contact.toKritorContact()
         ElementType.JSON -> KritorJson(ee.json.json)
         ElementType.XML -> KritorXml(ee.xml.xml)
         // ElementType.FILE -> TODO()
