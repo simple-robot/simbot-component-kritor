@@ -9,6 +9,7 @@ import love.forte.simbot.component.Component
 import love.forte.simbot.component.ComponentConfigureContext
 import love.forte.simbot.component.ComponentFactory
 import love.forte.simbot.component.kritor.core.bot.SerializableKritorBotConfiguration
+import love.forte.simbot.component.kritor.core.message.includeAllComponentMessageElementImpls
 import love.forte.simbot.message.messageElementPolymorphic
 
 

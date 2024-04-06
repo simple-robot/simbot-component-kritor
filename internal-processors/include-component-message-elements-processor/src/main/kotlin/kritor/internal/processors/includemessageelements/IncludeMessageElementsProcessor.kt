@@ -37,7 +37,7 @@ private val BaseMessageElementClassName =
     ClassName("love.forte.simbot.component.kritor.core.message", "KritorMessageElement")
 
 // 生成的函数会在此包下
-private const val COMPONENT_PACKAGE = "love.forte.simbot.component.kritor.core"
+private const val COMPONENT_PACKAGE = "love.forte.simbot.component.kritor.core.message"
 // private val ComponentClassName = ClassName(COMPONENT_PACKAGE, "KritorComponent")
 
 // ktx 可序列化标记
