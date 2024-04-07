@@ -21,6 +21,7 @@ import love.forte.simbot.component.kritor.core.message.KritorPoke.Companion.toKr
 import love.forte.simbot.component.kritor.core.message.KritorReply.Companion.toKritorReply
 import love.forte.simbot.component.kritor.core.message.KritorShare.Companion.toKritorShare
 import love.forte.simbot.component.kritor.core.message.internal.toRemoteImage
+import love.forte.simbot.component.kritor.core.message.internal.toRemoteVoice
 import love.forte.simbot.component.kritor.core.message.internal.unknownKritorMessageElement
 import love.forte.simbot.message.*
 import love.forte.simbot.message.Message
@@ -164,6 +165,7 @@ internal suspend inline fun Message.Element.resolveToKritorElements(block: (Mess
             }
             else -> error("Unknown or unsupported image type") // TODO
         }
+
         // 其他？
 
 
@@ -199,16 +201,16 @@ internal suspend inline fun Message.resolveToSendMessageRequest(
     }
 }
 
-private val URI.isFileScheme: Boolean
+internal val URI.isFileScheme: Boolean
     get() = scheme == "file"
 
-private fun File.b64(): String =
+internal fun File.b64(): String =
     Base64.getEncoder().encodeToString(readBytes())
 
-private fun Path.b64(): String =
+internal fun Path.b64(): String =
     Base64.getEncoder().encodeToString(readBytes())
 
-private fun ByteArray.b64(): String =
+internal fun ByteArray.b64(): String =
     Base64.getEncoder().encodeToString(this)
 
 private inline fun b64ImgElement(
@@ -602,7 +604,7 @@ public fun EventElement.toMessage(): Message.Element {
             reply.toKritorReply()
         }
         EventElementType.IMAGE -> ee.image.toRemoteImage()
-        // EventElementType.VOICE -> TODO()
+        EventElementType.VOICE -> ee.voice.toRemoteVoice()
         // EventElementType.VIDEO -> TODO()
         EventElementType.BASKETBALL -> KritorBasketball(ee.basketball.id.toUInt().ID)
         EventElementType.DICE -> KritorDice(ee.dice.id.toUInt().ID)

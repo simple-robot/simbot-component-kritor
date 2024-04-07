@@ -53,7 +53,7 @@ internal class KritorRemoteEventElementImageImpl(
                     "file=${file}, " +
                     "url=${if (hasUrl()) url else UNKNOWN_VALUE}, " +
                     "type=${if (hasType()) type else UNKNOWN_VALUE}, " +
-                    "subType=${if (hasSubType()) subType else UNKNOWN_VALUE}, " +
+                    "subType=${if (hasSubType()) subType else UNKNOWN_VALUE}" +
                     ")"
         }
 
