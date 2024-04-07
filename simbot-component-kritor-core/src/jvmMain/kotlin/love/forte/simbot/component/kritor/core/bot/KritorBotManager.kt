@@ -109,7 +109,8 @@ public interface KritorBotManager : BotManager {
                 component,
                 configuration,
                 mergedContext,
-                mergedContext[Job]!!
+                mergedContext[Job]!!,
+                context.eventDispatcher,
             )
         }
     }

@@ -11,10 +11,7 @@ import io.kritor.contact.ContactServiceGrpcKt
 import io.kritor.core.GetCurrentAccountResponse
 import io.kritor.core.KritorServiceGrpcKt
 import io.kritor.core.getCurrentAccountRequest
-import io.kritor.event.EventServiceGrpcKt
-import io.kritor.event.EventStructure
-import io.kritor.event.EventType
-import io.kritor.event.requestPushEvent
+import io.kritor.event.*
 import io.kritor.file.GroupFileServiceGrpcKt
 import io.kritor.friend.FriendServiceGrpcKt
 import io.kritor.group.GroupServiceGrpcKt
@@ -26,10 +23,13 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import love.forte.simbot.annotations.FragileSimbotAPI
+import love.forte.simbot.annotations.InternalSimbotAPI
 import love.forte.simbot.bot.ContactRelation
 import love.forte.simbot.bot.GuildRelation
 import love.forte.simbot.bot.JobBasedBot
@@ -43,6 +43,11 @@ import love.forte.simbot.component.kritor.core.KritorComponent
 import love.forte.simbot.component.kritor.core.actor.KritorGroup
 import love.forte.simbot.component.kritor.core.actor.internal.toGroup
 import love.forte.simbot.component.kritor.core.bot.*
+import love.forte.simbot.component.kritor.core.event.KritorUnsupportedEvent
+import love.forte.simbot.component.kritor.core.event.internal.KritorGroupMessageEventImpl
+import love.forte.simbot.event.Event
+import love.forte.simbot.event.EventDispatcher
+import love.forte.simbot.event.onEachError
 import love.forte.simbot.logger.LoggerFactory
 import kotlin.coroutines.CoroutineContext
 
@@ -58,8 +63,10 @@ internal class KritorBotImpl(
     private val authReq: AuthReq,
     private val managedChannelBuilder: ManagedChannelBuilder<*>,
     private val configuration: KritorBotConfiguration,
+    private val eventDispatcher: EventDispatcher
 ) : KritorBot, JobBasedBot() {
     private val logger = LoggerFactory.getLogger("love.forte.simbot.component.kritor.core.bot.${authReq.account}")
+    private val eventLogger = LoggerFactory.getLogger("love.forte.simbot.component.kritor.core.bot.event.${authReq.account}")
     internal val subCoroutineContext: CoroutineContext = coroutineContext.minusKey(Job)
 
     override val id: ID = authReq.account.ID
@@ -184,12 +191,46 @@ internal class KritorBotImpl(
                 logger.debug("Receive event, type: {}, structure: {}", eventStructure.type, eventStructure)
             }
             .collect { eventStructure ->
-                // runCatching {
-                //
-                // }
-                TODO("eventStructure: $eventStructure")
+                runCatching {
+                    when (eventStructure.type) {
+                        EventType.EVENT_TYPE_MESSAGE -> acceptMessageEvent(eventStructure, eventStructure.message)
 
+                        else -> pushUnsupported(eventStructure)// TODO("processEvents $eventStructure")
+                    }
+                }
             }
+    }
+
+    @OptIn(InternalSimbotAPI::class, FragileSimbotAPI::class)
+    private fun pushUnsupported(sourceStructure: EventStructure) {
+        pushLaunch(KritorUnsupportedEvent(this, sourceStructure))
+    }
+
+    private fun pushLaunch(event: Event) {
+        eventLogger.debug("On event: {}", event)
+        eventDispatcher.push(event)
+            .onEachError { r ->
+                eventLogger.error("On event error result: {}", r, r.content)
+            }
+            .launchIn(this)
+    }
+
+    private fun acceptMessageEvent(eventStructure: EventStructure, event: MessageEvent) {
+        val contact = event.contact
+        val sender = event.sender
+        when (contact.scene) {
+            Scene.GROUP -> {
+                pushLaunch(
+                    KritorGroupMessageEventImpl(
+                        bot = this,
+                        sourceEventStructure = eventStructure,
+                        sourceEvent = event
+                    )
+                )
+            }
+
+            else -> pushUnsupported(eventStructure) // TODO("acceptMessageEvent $event")
+        }
     }
 
 }
@@ -221,5 +262,8 @@ internal class ServicesImpl(
     override val guildService = GuildServiceGrpcKt.GuildServiceCoroutineStub(channel)
     override val messageService = MessageServiceGrpcKt.MessageServiceCoroutineStub(channel)
 }
+
+
+
 
 

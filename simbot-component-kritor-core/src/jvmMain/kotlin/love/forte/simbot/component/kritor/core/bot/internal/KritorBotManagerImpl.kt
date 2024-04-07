@@ -14,6 +14,7 @@ import love.forte.simbot.component.kritor.core.bot.KritorBot
 import love.forte.simbot.component.kritor.core.bot.KritorBotConfiguration
 import love.forte.simbot.component.kritor.core.bot.KritorBotManager
 import love.forte.simbot.component.kritor.core.bot.KritorBotManagerConfiguration
+import love.forte.simbot.event.EventDispatcher
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
 
@@ -27,6 +28,7 @@ internal class KritorBotManagerImpl(
     private val configuration: KritorBotManagerConfiguration,
     private val coroutineContext: CoroutineContext,
     override val job: Job,
+    private val eventDispatcher: EventDispatcher,
 ) : KritorBotManager, JobBasedBotManager() {
     private val bots = ConcurrentHashMap<String, Bot>()
 
@@ -49,7 +51,8 @@ internal class KritorBotManagerImpl(
             mergedContext[Job]!!,
             authReq,
             channelBuilder,
-            configuration
+            configuration,
+            eventDispatcher
         )
     }
 }

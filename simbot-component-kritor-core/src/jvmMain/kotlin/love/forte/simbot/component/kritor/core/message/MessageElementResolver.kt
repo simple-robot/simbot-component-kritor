@@ -2,7 +2,6 @@
 
 package love.forte.simbot.component.kritor.core.message
 
-import io.kritor.event.ElementType
 import io.kritor.event.ImageType
 import io.kritor.event.MusicPlatform
 import io.kritor.message.*
@@ -21,9 +20,19 @@ import love.forte.simbot.component.kritor.core.message.KritorMusic.Companion.toK
 import love.forte.simbot.component.kritor.core.message.KritorPoke.Companion.toKritorPoke
 import love.forte.simbot.component.kritor.core.message.KritorReply.Companion.toKritorReply
 import love.forte.simbot.component.kritor.core.message.KritorShare.Companion.toKritorShare
+import love.forte.simbot.component.kritor.core.message.internal.toRemoteImage
 import love.forte.simbot.component.kritor.core.message.internal.unknownKritorMessageElement
 import love.forte.simbot.message.*
 import love.forte.simbot.message.Message
+import love.forte.simbot.resource.FileResource
+import love.forte.simbot.resource.PathResource
+import love.forte.simbot.resource.URIResource
+import java.io.File
+import java.net.URI
+import java.nio.file.Path
+import java.util.*
+import kotlin.io.path.readBytes
+import kotlin.io.path.toPath
 import io.kritor.event.Contact as EventContact
 import io.kritor.event.Element as EventElement
 import io.kritor.event.ElementType as EventElementType
@@ -37,7 +46,7 @@ import io.kritor.message.MusicPlatform as MsgMusicPlatform
 import io.kritor.message.Scene as MsgScene
 
 
-internal inline fun Message.Element.resolveToKritorElements(block: (Message.Element, Element) -> Unit) {
+internal suspend inline fun Message.Element.resolveToKritorElements(block: (Message.Element, Element) -> Unit) {
     when (val e = this) {
         is KritorSendElementTransformer -> e.toElement()
 
@@ -76,68 +85,93 @@ internal inline fun Message.Element.resolveToKritorElements(block: (Message.Elem
         })
 
         is Image -> when (e) {
-            //   oneof data {
-            //     string file_name = 1; // 图片文件名
-            //     string file_path = 3;// 图片绝对路径
-            //     string file_base64 = 5;// 文件base64，不需要base://开头
-            //     string url = 2; // 文件下载地址
-            //   }
             is OfflineImage -> {
                 // 一个本地文件，用于发送
                 when (e) {
-                    is OfflineFileImage -> {} // TODO
-                    is OfflinePathImage -> {} // TODO
+                    is OfflineFileImage, is OfflinePathImage -> {
+                        val b64 = when (e) {
+                            is OfflineFileImage -> e.file.b64()
+                            is OfflinePathImage -> e.path.b64()
+                            else -> error("Unknown image type") // 不可达
+                        }
+
+                        b64ImgElement(b64, e, block)
+                    }
                     is OfflineURIImage -> {
                         val uri = e.uri
-                        if (uri.scheme == "file") {
-                            // 如果协议是 file: 那还是一个本地文件
-                            TODO("uri(scheme=file)")
-
+                        if (uri.isFileScheme) {
+                            // 如果协议是 `file` 那还是一个本地文件,
+                            // 直接读取bytes然后b64伺候
+                            val b64 = uri.toPath().b64()
+                            b64ImgElement(b64, e, block)
                         } else {
-                            block(e, element {
-                                type = MsgElementType.IMAGE
-                                imageElement {
-                                    this.url = uri.toASCIIString()
-                                }
-                            })
+                            // 要么就当它是个URL图片，直接提供URL
+                            urlImgElement(uri.toASCIIString(), e, block)
                         }
                     }
-
                     is OfflineResourceImage -> {
-                        TODO()
-                    }
+                        when (val resource = e.resource) {
+                            is FileResource, is PathResource -> {
+                                val b64 = when (resource) {
+                                    is FileResource -> resource.file.b64()
+                                    is PathResource -> resource.path.b64()
+                                    else -> error("Unknown resource type") // 不可达
+                                }
 
-                    else -> {
-                        // TODO
-
-                        block(e, element {
-                            type = MsgElementType.IMAGE
-                            image = imageElement {
-                                this.type
+                                b64ImgElement(b64, e, block)
                             }
-                        })
 
+                            is URIResource -> {
+                                val uri = resource.uri
+                                // 文件，读b64，或连接地址
+                                if (resource.uri.isFileScheme) {
+                                    val b64 = uri.toPath().b64()
+                                    b64ImgElement(b64, e, block)
+                                } else {
+                                    urlImgElement(uri.toASCIIString(), e, block)
+                                }
+                            }
+
+                            // 其他: 尝试使用 `data()` 然后b64
+                            else -> {
+                                val b64 = Base64.getEncoder().encodeToString(resource.data())
+                                b64ImgElement(b64, e, block)
+                            }
+                        }
+                    }
+                    // 其他: 尝试使用 `data()` 然后b64
+                    else -> {
+                        val b64 = Base64.getEncoder().encodeToString(e.data())
+                        b64ImgElement(b64, e, block)
                     }
                 }
-
             }
-
             is RemoteImage -> {
-                // 一个远端文件 ..?
+                // 一个远端文件
+                when (e) {
+                    // is KritorRemoteEventElementImage
+                    // 已经被 KritorSendElementTransformer 处理
 
-                TODO("RemoteImage")
+                    // 其他未知的其他远程图片
+                    // 要么知道它的url，要么没法解析
+                    is RemoteUrlAwareImage -> {
+                        val url = e.url()
+                        b64ImgElement(url, e, block = block)
+                    }
+
+                    else -> throw IllegalArgumentException("Unsupported RemoteImage type: $e")
+                }
             }
-
             else -> error("Unknown or unsupported image type") // TODO
         }
         // 其他？
 
 
     }
-    // TODO  Message.resolveToKritorElements
+// TODO  Message.resolveToKritorElements
 }
 
-internal inline fun Message.resolveToKritorElements(block: (Message.Element, Element) -> Unit) {
+internal suspend inline fun Message.resolveToKritorElements(block: (Message.Element, Element) -> Unit) {
     if (this is Message.Element) {
         resolveToKritorElements(block)
     }
@@ -145,13 +179,13 @@ internal inline fun Message.resolveToKritorElements(block: (Message.Element, Ele
     (this as Messages).forEach { it.resolveToKritorElements(block) }
 }
 
-internal fun Message.resolveToKritorElementList(): List<Element> {
+internal suspend fun Message.resolveToKritorElementList(): List<Element> {
     return buildList {
         resolveToKritorElements { _, element -> add(element) }
     }
 }
 
-internal inline fun Message.resolveToSendMessageRequest(
+internal suspend inline fun Message.resolveToSendMessageRequest(
     pre: SendMessageRequestKt.Dsl.() -> Unit = {},
     each: (Message.Element, Element) -> Element? = { _, element -> element },
     post: SendMessageRequestKt.Dsl.() -> Unit = {},
@@ -165,6 +199,47 @@ internal inline fun Message.resolveToSendMessageRequest(
     }
 }
 
+private val URI.isFileScheme: Boolean
+    get() = scheme == "file"
+
+private fun File.b64(): String =
+    Base64.getEncoder().encodeToString(readBytes())
+
+private fun Path.b64(): String =
+    Base64.getEncoder().encodeToString(readBytes())
+
+private fun ByteArray.b64(): String =
+    Base64.getEncoder().encodeToString(this)
+
+private inline fun b64ImgElement(
+    b64: String,
+    e: Message.Element,
+    block: (Message.Element, Element) -> Unit,
+    imageBlock: ImageElementKt.Dsl.() -> Unit = {}
+) {
+    block(e, element {
+        type = MsgElementType.IMAGE
+        image = imageElement {
+            fileBase64 = b64
+            imageBlock()
+        }
+    })
+}
+
+private inline fun urlImgElement(
+    url: String,
+    e: Message.Element,
+    block: (Message.Element, Element) -> Unit,
+    imageBlock: ImageElementKt.Dsl.() -> Unit = {}
+) {
+    block(e, element {
+        type = MsgElementType.IMAGE
+        image = imageElement {
+            this.url = url
+            imageBlock()
+        }
+    })
+}
 
 internal fun EventElement.toMessageElement(): Element {
     val ee = this
@@ -499,8 +574,8 @@ public fun EventElement.toMessage(): Message.Element {
 
     return when (eeType) {
         null -> unknownKritorMessageElement(ee)
-        ElementType.TEXT -> ee.text.text.toText()
-        ElementType.AT -> {
+        EventElementType.TEXT -> ee.text.text.toText()
+        EventElementType.AT -> {
             val at = ee.at
             if (at.uid.equals("all", ignoreCase = true)) {
                 AtAll
@@ -512,42 +587,42 @@ public fun EventElement.toMessage(): Message.Element {
             }
         }
 
-        ElementType.FACE -> {
+        EventElementType.FACE -> {
             val face = ee.face
             face.toKritorFace()
         }
 
-        ElementType.BUBBLE_FACE -> {
+        EventElementType.BUBBLE_FACE -> {
             val bubbleFace = ee.bubbleFace
             bubbleFace.toKritorBubbleFace()
         }
 
-        ElementType.REPLY -> {
+        EventElementType.REPLY -> {
             val reply = ee.reply
             reply.toKritorReply()
         }
-        // ElementType.IMAGE -> TODO()
-        // ElementType.VOICE -> TODO()
-        // ElementType.VIDEO -> TODO()
-        ElementType.BASKETBALL -> KritorBasketball(ee.basketball.id.toUInt().ID)
-        ElementType.DICE -> KritorDice(ee.dice.id.toUInt().ID)
-        ElementType.RPS -> KritorRps(ee.poke.id.toUInt().ID)
-        ElementType.POKE -> ee.poke.toKritorPoke()
-        ElementType.MUSIC -> ee.music.toKritorMusic()
-        ElementType.WEATHER -> KritorWeather(ee.weather.city, ee.weather.code)
-        ElementType.LOCATION -> ee.location.toKritorLocation()
-        ElementType.SHARE -> ee.share.toKritorShare()
-        ElementType.GIFT -> KritorGift(ee.gift.qq.toULong().ID, ee.gift.id.toUInt().ID)
-        ElementType.MARKET_FACE -> KritorMarketFace(ee.marketFace.id.ID, ee.markdown.markdown)
-        ElementType.FORWARD -> ee.forward.toKritorForward()
-        ElementType.CONTACT -> ee.contact.toKritorContact()
-        ElementType.JSON -> KritorJson(ee.json.json)
-        ElementType.XML -> KritorXml(ee.xml.xml)
-        // ElementType.FILE -> TODO()
-        // ElementType.MARKDOWN -> TODO()
-        // ElementType.BUTTON -> TODO()
-        // ElementType.NODE -> TODO()
-        // ElementType.UNRECOGNIZED -> TODO()
+        EventElementType.IMAGE -> ee.image.toRemoteImage()
+        // EventElementType.VOICE -> TODO()
+        // EventElementType.VIDEO -> TODO()
+        EventElementType.BASKETBALL -> KritorBasketball(ee.basketball.id.toUInt().ID)
+        EventElementType.DICE -> KritorDice(ee.dice.id.toUInt().ID)
+        EventElementType.RPS -> KritorRps(ee.poke.id.toUInt().ID)
+        EventElementType.POKE -> ee.poke.toKritorPoke()
+        EventElementType.MUSIC -> ee.music.toKritorMusic()
+        EventElementType.WEATHER -> KritorWeather(ee.weather.city, ee.weather.code)
+        EventElementType.LOCATION -> ee.location.toKritorLocation()
+        EventElementType.SHARE -> ee.share.toKritorShare()
+        EventElementType.GIFT -> KritorGift(ee.gift.qq.toULong().ID, ee.gift.id.toUInt().ID)
+        EventElementType.MARKET_FACE -> KritorMarketFace(ee.marketFace.id.ID, ee.markdown.markdown)
+        EventElementType.FORWARD -> ee.forward.toKritorForward()
+        EventElementType.CONTACT -> ee.contact.toKritorContact()
+        EventElementType.JSON -> KritorJson(ee.json.json)
+        EventElementType.XML -> KritorXml(ee.xml.xml)
+        // EventElementType.FILE -> TODO()
+        // EventElementType.MARKDOWN -> TODO()
+        // EventElementType.BUTTON -> TODO()
+        // EventElementType.NODE -> TODO()
+        // EventElementType.UNRECOGNIZED -> TODO()
         else -> unknownKritorMessageElement(ee)
     }
 }

@@ -27,6 +27,15 @@ import love.forte.simbot.message.RemoteImage
  * val image = resource.toOfflineImage()
  * ```
  *
+ * 当使用标准的 [OfflineImage] 发送图片时, 会根据图片或其中Resource的类型，
+ * 产生如下可能的结果：
+ * 1. 得知是一个本地图片(例如是一个file或path)，
+ * 会使用 `base64` 的形式发送。
+ * 2. 是一个连接，例如 `https://xxx`，
+ * 会直接提供这个连接地址给kritor服务端。
+ * 3. 其他无法检测到的情况，会尝试读取它的
+ * `data` (也就是字节数据) 后编码为 `base64` 发送。
+ *
  * 如果希望更加灵活地控制图片消息元素的内容，
  * 你也可以选择使用 [KritorSourceMessageElement]
  * 来直接使用一个原始的 [io.kritor.message.ImageElement]。
@@ -39,6 +48,8 @@ import love.forte.simbot.message.RemoteImage
  *     }
  * }
  * ```
+ *
+ *
  *
  * ## 接收图片
  * [KritorRemoteImage] 表示一个从 Kritor 事件中提取出来的图片元素，
