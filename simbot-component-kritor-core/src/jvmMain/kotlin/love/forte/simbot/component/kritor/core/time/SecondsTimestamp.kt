@@ -9,12 +9,14 @@ import love.forte.simbot.common.time.Timestamp
  *
  * @author ForteScarlet
  */
-internal class SecondsTimestamp(private val seconds: Int) : Timestamp {
+internal class SecondsTimestamp(private val time: Int) : Timestamp {
     override val milliseconds: Long
-        get() = TimeUnit.SECONDS.toMillis(seconds.toLong())
+        get() = TimeUnit.SECONDS.toMillis(time.toLong())
 
     override fun timeAs(unit: TimeUnit): Long =
-        unit.convert(seconds.toLong(), TimeUnit.SECONDS)
+        unit.convert(time.toLong(), TimeUnit.SECONDS)
+
+    override fun toString(): String = "SecondsTimestamp(time=$time)"
 }
 
 internal fun secondsTimestamp(seconds: Int): Timestamp = SecondsTimestamp(seconds)
