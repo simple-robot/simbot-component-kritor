@@ -61,6 +61,9 @@ internal class KritorMessageContentImpl(
             }
         }
     }
+
+    override fun toString(): String =
+        "KritorMessageContent(id=$messageId, seq=$seq, elementSize=${sourceElements.size})"
 }
 
 internal fun MessageEvent.resolveMessageContent(

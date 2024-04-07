@@ -57,6 +57,19 @@ internal class KritorRemoteEventElementImageImpl(
                     ")"
         }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is KritorRemoteEventElementImageImpl) return false
+
+        if (sourceElement != other.sourceElement) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return sourceElement.hashCode()
+    }
+
 }
 
 private const val UNKNOWN_VALUE = "<UNKNOWN>"

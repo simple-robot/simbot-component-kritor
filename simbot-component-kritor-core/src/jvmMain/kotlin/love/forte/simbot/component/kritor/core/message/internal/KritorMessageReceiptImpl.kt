@@ -44,6 +44,9 @@ internal class KritorMessageReceiptImpl(
             }
         }
     }
+
+    override fun toString(): String =
+        "KritorMessageReceipt(id=${source.messageId}, time=${source.messageTime})"
 }
 
 

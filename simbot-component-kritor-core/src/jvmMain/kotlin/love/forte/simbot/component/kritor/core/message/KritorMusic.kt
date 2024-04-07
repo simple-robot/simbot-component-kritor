@@ -108,6 +108,28 @@ public class KritorMusic private constructor(
             this@KritorMusic.custom?.also { custom = it }
         }
     }
+
+    override fun toString(): String {
+        return "KritorMusic(id=$id, platform=$platform)"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is KritorMusic) return false
+
+        if (platform != other.platform) return false
+        if (id != other.id) return false
+        if (custom != other.custom) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = platform.hashCode()
+        result = 31 * result + (id?.hashCode() ?: 0)
+        result = 31 * result + (custom?.hashCode() ?: 0)
+        return result
+    }
 }
 
 /**

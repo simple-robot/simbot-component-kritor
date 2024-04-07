@@ -49,4 +49,26 @@ public class KritorContactElement private constructor(
             this@KritorContactElement.peer
         }
     }
+
+    override fun toString(): String {
+        return "KritorContactElement(scene=$scene, peer='$peer')"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is KritorContactElement) return false
+
+        if (scene != other.scene) return false
+        if (peer != other.peer) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = scene.hashCode()
+        result = 31 * result + peer.hashCode()
+        return result
+    }
+
+
 }

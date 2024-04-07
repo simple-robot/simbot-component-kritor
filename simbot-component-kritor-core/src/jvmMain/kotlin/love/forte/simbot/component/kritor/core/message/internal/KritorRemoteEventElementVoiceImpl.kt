@@ -48,6 +48,19 @@ internal class KritorRemoteEventElementVoiceImpl(
                     "magic=$magic" +
                     ")"
         }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is KritorRemoteEventElementVoiceImpl) return false
+
+        if (sourceElement != other.sourceElement) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return sourceElement.hashCode()
+    }
 }
 
 private const val UNKNOWN_VALUE = "<UNKNOWN>"
