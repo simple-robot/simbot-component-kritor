@@ -54,15 +54,20 @@ application.kritorBots {
 
 // 注册事件处理器
 application.listeners {
-    // 处理事件 ChatGroupMessage
+    // 处理事件 ChatGroupMessageEvent
     // 这是simbot API定义的泛用类型
     process<ChatGroupMessageEvent> {
         // ...
     }
 
     // 指定处理 Kritor 组件内定义的各事件类型
-    process<KritorEvent> {
-        // ...
+    // 比如此处的 Kritor 群消息事件
+    // Tips: KritorGroupMessageEvent 继承实现 ChatGroupMessageEvent
+    process<KritorGroupMessageEvent> { event ->
+        // 基于事件回复消息
+        event.reply("Hello, ")
+        // 基于 Group 实例发送消息
+        event.content().send(Text { "World!" })
     }
 }
 ```
@@ -98,5 +103,18 @@ class MainApp
 
 fun main(args: Array<String>) {
     runApplication<MainApp>(*args)
+}
+
+/** 一些事件处理器的载体 */
+@Component
+class MyHandler {
+    /** 监听处理 kritor 的群消息事件 */
+    @Listener
+    suspend fun onMessage(event: KritorGroupMessageEvent) {
+        // 基于事件回复消息
+        event.reply("Hello, ")
+        // 基于 Group 实例发送消息
+        event.content().send(Text { "World!" })
+    }
 }
 ```
