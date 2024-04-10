@@ -34,10 +34,12 @@ internal class KritorMessageReceiptImpl(
         // val stdOpts = options.standardAnalysis()
 
         runCatching {
-            botImpl.services.messageService.recallMessage(recallMessageRequest {
-                contact = sourceContact
-                messageId = source.messageId
-            })
+            botImpl.services.messageService.recallMessage(
+                recallMessageRequest {
+                    contact = sourceContact
+                    messageId = source.messageId
+                }
+            )
         }.onFailure {
             if (StandardDeleteOption.IGNORE_ON_FAILURE !in options) {
                 throw DeleteFailureException(it)

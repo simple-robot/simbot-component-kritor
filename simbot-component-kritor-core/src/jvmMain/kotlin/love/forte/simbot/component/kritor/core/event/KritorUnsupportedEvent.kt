@@ -57,5 +57,8 @@ public class KritorUnsupportedEvent @InternalSimbotAPI constructor(
         else -> Timestamp.now()
     }
 
-    override fun toString(): String = "KritorUnsupportedEvent(type=${sourceEventStructure.type}, sourceEventStructure=$sourceEventStructure)"
+    override fun toString(): String =
+        "KritorUnsupportedEvent(" +
+            "type=${sourceEventStructure.type}, " +
+            "sourceEventStructure=$sourceEventStructure)"
 }

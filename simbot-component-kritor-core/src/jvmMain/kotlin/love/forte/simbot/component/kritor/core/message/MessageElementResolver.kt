@@ -51,39 +51,51 @@ internal suspend inline fun Message.Element.resolveToKritorElements(block: (Mess
     when (val e = this) {
         is KritorSendElementTransformer -> e.toElement()
 
-        is PlainText -> block(e, element {
-            type = MsgElementType.TEXT
-            text = textElement { text = e.text }
-        })
-
-        is Face -> block(e, element {
-            type = MsgElementType.FACE
-            face = faceElement {
-                id = (e.id as? NumericalID)?.toInt() ?: e.id.literal.toInt()
-                // this.isBig
+        is PlainText -> block(
+            e,
+            element {
+                type = MsgElementType.TEXT
+                text = textElement { text = e.text }
             }
-        })
+        )
 
-        is At -> block(e, element {
-            type = MsgElementType.AT
-            at = atElement {
-                // uint64 uin = 1; // qq号，全体成员则uin为0
-                // string uid = 2; // uid二选一，全体成员这里请写all
-                val id = e.target
-                if (id is NumericalID) {
-                    uin = id.toLong()
-                } else {
-                    uid = id.literal
+        is Face -> block(
+            e,
+            element {
+                type = MsgElementType.FACE
+                face = faceElement {
+                    id = (e.id as? NumericalID)?.toInt() ?: e.id.literal.toInt()
+                    // this.isBig
                 }
             }
-        })
+        )
 
-        is AtAll -> block(e, element {
-            type = MsgElementType.AT
-            at = atElement {
-                uin = 0
+        is At -> block(
+            e,
+            element {
+                type = MsgElementType.AT
+                at = atElement {
+                    // uint64 uin = 1; // qq号，全体成员则uin为0
+                    // string uid = 2; // uid二选一，全体成员这里请写all
+                    val id = e.target
+                    if (id is NumericalID) {
+                        uin = id.toLong()
+                    } else {
+                        uid = id.literal
+                    }
+                }
             }
-        })
+        )
+
+        is AtAll -> block(
+            e,
+            element {
+                type = MsgElementType.AT
+                at = atElement {
+                    uin = 0
+                }
+            }
+        )
 
         is Image -> when (e) {
             is OfflineImage -> {
@@ -98,6 +110,7 @@ internal suspend inline fun Message.Element.resolveToKritorElements(block: (Mess
 
                         b64ImgElement(b64, e, block)
                     }
+
                     is OfflineURIImage -> {
                         val uri = e.uri
                         if (uri.isFileScheme) {
@@ -110,6 +123,7 @@ internal suspend inline fun Message.Element.resolveToKritorElements(block: (Mess
                             urlImgElement(uri.toASCIIString(), e, block)
                         }
                     }
+
                     is OfflineResourceImage -> {
                         when (val resource = e.resource) {
                             is FileResource, is PathResource -> {
@@ -147,6 +161,7 @@ internal suspend inline fun Message.Element.resolveToKritorElements(block: (Mess
                     }
                 }
             }
+
             is RemoteImage -> {
                 // 一个远端文件
                 when (e) {
@@ -163,6 +178,7 @@ internal suspend inline fun Message.Element.resolveToKritorElements(block: (Mess
                     else -> throw IllegalArgumentException("Unsupported RemoteImage type: $e")
                 }
             }
+
             else -> error("Unknown or unsupported image type") // TODO
         }
 
@@ -219,13 +235,16 @@ private inline fun b64ImgElement(
     block: (Message.Element, Element) -> Unit,
     imageBlock: ImageElementKt.Dsl.() -> Unit = {}
 ) {
-    block(e, element {
-        type = MsgElementType.IMAGE
-        image = imageElement {
-            fileBase64 = b64
-            imageBlock()
+    block(
+        e,
+        element {
+            type = MsgElementType.IMAGE
+            image = imageElement {
+                fileBase64 = b64
+                imageBlock()
+            }
         }
-    })
+    )
 }
 
 private inline fun urlImgElement(
@@ -234,15 +253,19 @@ private inline fun urlImgElement(
     block: (Message.Element, Element) -> Unit,
     imageBlock: ImageElementKt.Dsl.() -> Unit = {}
 ) {
-    block(e, element {
-        type = MsgElementType.IMAGE
-        image = imageElement {
-            this.url = url
-            imageBlock()
+    block(
+        e,
+        element {
+            type = MsgElementType.IMAGE
+            image = imageElement {
+                this.url = url
+                imageBlock()
+            }
         }
-    })
+    )
 }
 
+@Suppress("MaxLineLength")
 internal fun EventElement.toMessageElement(): Element {
     val ee = this
     val eeType = type
@@ -440,41 +463,46 @@ internal fun EventElement.toMessageElement(): Element {
                 }
             }
 
-            EventElementType.BUTTON -> {
+            EventElementType.BUTTON
+            -> {
                 button = buttonElement {
                     if (ee.button.rowsCount > 0) {
                         for (eRow in ee.button.rowsList) {
-                            rows.add(row {
-                                if (eRow.buttonsCount > 0) {
-                                    for (eButton in eRow.buttonsList) {
-                                        buttons.add(button {
-                                            this.id = eButton.id
-                                            if (eButton.hasRenderData()) {
-                                                this.renderData = buttonRender {
-                                                    this.label = eButton.renderData.label
-                                                    this.visitedLabel = eButton.renderData.visitedLabel
-                                                    this.style = eButton.renderData.style
-                                                }
-                                            }
-                                            if (eButton.hasAction()) {
-                                                this.action = buttonAction {
-                                                    this.type = eButton.action.type
-                                                    this.permission = buttonActionPermission {
-                                                        this.type = eButton.action.permission.type
-                                                        this.roleIds.addAll(eButton.action.permission.roleIdsList)
-                                                        this.userIds.addAll(eButton.action.permission.userIdsList)
+                            rows.add(
+                                row {
+                                    if (eRow.buttonsCount > 0) {
+                                        for (eButton in eRow.buttonsList) {
+                                            buttons.add(
+                                                button {
+                                                    this.id = eButton.id
+                                                    if (eButton.hasRenderData()) {
+                                                        this.renderData = buttonRender {
+                                                            this.label = eButton.renderData.label
+                                                            this.visitedLabel = eButton.renderData.visitedLabel
+                                                            this.style = eButton.renderData.style
+                                                        }
                                                     }
-                                                    this.unsupportedTips = eButton.action.unsupportedTips
-                                                    this.data = eButton.action.data
-                                                    this.reply = eButton.action.reply
-                                                    this.enter = eButton.action.enter
+                                                    if (eButton.hasAction()) {
+                                                        this.action = buttonAction {
+                                                            this.type = eButton.action.type
+                                                            this.permission = buttonActionPermission {
+                                                                this.type = eButton.action.permission.type
+                                                                this.roleIds.addAll(eButton.action.permission.roleIdsList)
+                                                                this.userIds.addAll(eButton.action.permission.userIdsList)
+                                                            }
+                                                            this.unsupportedTips = eButton.action.unsupportedTips
+                                                            this.data = eButton.action.data
+                                                            this.reply = eButton.action.reply
+                                                            this.enter = eButton.action.enter
+                                                        }
+                                                    }
                                                 }
-                                            }
-                                        })
+                                            )
+                                        }
                                     }
-                                }
 
-                            })
+                                }
+                            )
                         }
                     }
 
@@ -582,10 +610,11 @@ public fun EventElement.toMessage(): Message.Element {
             if (at.uid.equals("all", ignoreCase = true)) {
                 AtAll
             } else {
-                if (at.hasUin())
+                if (at.hasUin()) {
                     At(at.uin.ID) // LongID
-                else
+                } else {
                     At(at.uid.ID) // StringID
+                }
             }
         }
 
@@ -603,6 +632,7 @@ public fun EventElement.toMessage(): Message.Element {
             val reply = ee.reply
             reply.toKritorReply()
         }
+
         EventElementType.IMAGE -> ee.image.toRemoteImage()
         EventElementType.VOICE -> ee.voice.toRemoteVoice()
         // EventElementType.VIDEO -> TODO()

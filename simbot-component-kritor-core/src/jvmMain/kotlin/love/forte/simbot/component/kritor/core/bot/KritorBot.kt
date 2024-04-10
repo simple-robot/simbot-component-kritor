@@ -143,15 +143,15 @@ public interface BotAccountInfo {
  * @see KritorBot.services
  */
 public interface KritorBotServices {
-        public val channel: ManagedChannel
-        public val authentication:  AuthenticationGrpcKt.AuthenticationCoroutineStub
-        public val contactService:  ContactServiceGrpcKt.ContactServiceCoroutineStub
-        public val forwardMessageService:  ForwardMessageServiceGrpcKt.ForwardMessageServiceCoroutineStub
-        public val kritorService:  KritorServiceGrpcKt.KritorServiceCoroutineStub
-        public val eventService:  EventServiceGrpcKt.EventServiceCoroutineStub
-        public val friendService:  FriendServiceGrpcKt.FriendServiceCoroutineStub
-        public val groupService:  GroupServiceGrpcKt.GroupServiceCoroutineStub
-        public val groupFileService:  GroupFileServiceGrpcKt.GroupFileServiceCoroutineStub
-        public val guildService:  GuildServiceGrpcKt.GuildServiceCoroutineStub
-        public val messageService:  MessageServiceGrpcKt.MessageServiceCoroutineStub
+    public val channel: ManagedChannel
+    public val authentication: AuthenticationGrpcKt.AuthenticationCoroutineStub
+    public val contactService: ContactServiceGrpcKt.ContactServiceCoroutineStub
+    public val forwardMessageService: ForwardMessageServiceGrpcKt.ForwardMessageServiceCoroutineStub
+    public val kritorService: KritorServiceGrpcKt.KritorServiceCoroutineStub
+    public val eventService: EventServiceGrpcKt.EventServiceCoroutineStub
+    public val friendService: FriendServiceGrpcKt.FriendServiceCoroutineStub
+    public val groupService: GroupServiceGrpcKt.GroupServiceCoroutineStub
+    public val groupFileService: GroupFileServiceGrpcKt.GroupFileServiceCoroutineStub
+    public val guildService: GuildServiceGrpcKt.GuildServiceCoroutineStub
+    public val messageService: MessageServiceGrpcKt.MessageServiceCoroutineStub
 }

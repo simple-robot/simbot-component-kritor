@@ -73,16 +73,18 @@ internal abstract class AbstractKritorBasicGroupMemberInfoImpl : KritorBasicGrou
         })
 
         runCatching {
-            bot.services.groupService.kickMember(kickMemberRequest {
-                groupId = this@AbstractKritorBasicGroupMemberInfoImpl.groupId
-                targetUid = id.literal
-                if (kickAnalyzer.isRejectAddRequest) {
-                    rejectAddRequest = true
+            bot.services.groupService.kickMember(
+                kickMemberRequest {
+                    groupId = this@AbstractKritorBasicGroupMemberInfoImpl.groupId
+                    targetUid = id.literal
+                    if (kickAnalyzer.isRejectAddRequest) {
+                        rejectAddRequest = true
+                    }
+                    kickAnalyzer.kickReason?.also {
+                        kickReason = it
+                    }
                 }
-                kickAnalyzer.kickReason?.also {
-                    kickReason = it
-                }
-            })
+            )
         }.onFailure { e ->
             if (!analysis.isIgnoreOnFailure) {
                 throw DeleteFailureException(e.localizedMessage, e)
@@ -150,7 +152,9 @@ internal class KritorBasicGroupMemberInfoImpl(
 internal fun GroupMemberInfo.toMemberInfoImpl(
     bot: KritorBotImpl, groupId: Long
 ): KritorBasicGroupMemberInfoImpl = KritorBasicGroupMemberInfoImpl(
-    bot, this, groupId
+    bot,
+    this,
+    groupId
 )
 
 /**
@@ -175,32 +179,39 @@ internal class KritorGroupMemberImpl(
     override var nick: String = source.card
 
     override suspend fun modifyNick(newNick: String) {
-        bot.services.groupService.modifyMemberCard(modifyMemberCardRequest {
-            this.groupId = this@KritorGroupMemberImpl.groupId
-            this.targetUid = source.uid
-            this.card = newNick
-        })
+        bot.services.groupService.modifyMemberCard(
+            modifyMemberCardRequest {
+                this.groupId = this@KritorGroupMemberImpl.groupId
+                this.targetUid = source.uid
+                this.card = newNick
+            }
+        )
         this.nick = newNick
     }
 
+    @Suppress("UseRequire")
     override suspend fun ban(duration: Duration) {
         if (duration.isNegative && duration.isZero) {
             throw IllegalArgumentException("Ban duration cannot be negative.")
         }
 
-        bot.services.groupService.banMember(banMemberRequest {
-            this.groupId = this@KritorGroupMemberImpl.groupId
-            this.targetUid = source.uid
-            this.duration = duration.toMillis().toInt()
-        })
+        bot.services.groupService.banMember(
+            banMemberRequest {
+                this.groupId = this@KritorGroupMemberImpl.groupId
+                this.targetUid = source.uid
+                this.duration = duration.toMillis().toInt()
+            }
+        )
     }
 
     override suspend fun unban() {
-        bot.services.groupService.banMember(banMemberRequest {
-            this.groupId = this@KritorGroupMemberImpl.groupId
-            this.targetUid = source.uid
-            this.duration = 0
-        })
+        bot.services.groupService.banMember(
+            banMemberRequest {
+                this.groupId = this@KritorGroupMemberImpl.groupId
+                this.targetUid = source.uid
+                this.duration = 0
+            }
+        )
     }
 
     override suspend fun poke() {

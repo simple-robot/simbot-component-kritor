@@ -1,7 +1,7 @@
 package love.forte.simbot.component.kritor.core.message
 
-import io.kritor.message.ElementType
 import io.kritor.message.Element
+import io.kritor.message.ElementType
 import io.kritor.message.basketballElement
 import io.kritor.message.element
 import kotlinx.serialization.SerialName

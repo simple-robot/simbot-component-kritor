@@ -51,10 +51,12 @@ internal class KritorMessageContentImpl(
 
     override suspend fun delete(vararg options: DeleteOption) {
         runCatching {
-            bot.services.messageService.recallMessage(recallMessageRequest {
-                messageId = this@KritorMessageContentImpl.messageId.toLong()
-                contact = this@KritorMessageContentImpl.contact.resolve()
-            })
+            bot.services.messageService.recallMessage(
+                recallMessageRequest {
+                    messageId = this@KritorMessageContentImpl.messageId.toLong()
+                    contact = this@KritorMessageContentImpl.contact.resolve()
+                }
+            )
         }.onFailure { e ->
             if (StandardDeleteOption.IGNORE_ON_FAILURE in options) {
                 throw DeleteFailureException(e.localizedMessage, e)

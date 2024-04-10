@@ -43,10 +43,10 @@ internal class KritorRemoteEventElementVoiceImpl(
     override fun toString(): String =
         with(sourceElement) {
             "KritorRemoteEventElementVoice(" +
-                    "file=${if (hasFile()) file else UNKNOWN_VALUE}, " +
-                    "url=$url, " +
-                    "magic=$magic" +
-                    ")"
+                "file=${if (hasFile()) file else UNKNOWN_VALUE}, " +
+                "url=$url, " +
+                "magic=$magic" +
+                ")"
         }
 
     override fun equals(other: Any?): Boolean {

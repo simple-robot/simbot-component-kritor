@@ -45,10 +45,12 @@ internal class KritorGroupMessageEventImpl(
 
     override suspend fun author(): KritorGroupMember {
         // find groupMemberInfo
-        val info = bot.services.groupService.getGroupMemberInfo(getGroupMemberInfoRequest {
-            this.groupId = groupInfo.groupId
-            this.uid = sourceEvent.sender.uid
-        }).groupMemberInfo
+        val info = bot.services.groupService.getGroupMemberInfo(
+            getGroupMemberInfoRequest {
+                this.groupId = groupInfo.groupId
+                this.uid = sourceEvent.sender.uid
+            }
+        ).groupMemberInfo
 
         return info.toMember(bot, groupInfo.groupId)
     }
@@ -78,7 +80,8 @@ internal class KritorGroupMessageEventImpl(
             text = text,
             pre = {
                 elements.add(replyElement())
-            }).toReceipt(bot, contact)
+            }
+        ).toReceipt(bot, contact)
     }
 
     override suspend fun reply(message: Message): KritorMessageReceipt {
@@ -98,7 +101,8 @@ internal class KritorGroupMessageEventImpl(
                     // 需要放到第一个元素吗？
                     elements.add(replyElement())
                 }
-            }).toReceipt(bot, contact)
+            }
+        ).toReceipt(bot, contact)
     }
 
     override suspend fun reply(messageContent: MessageContent): KritorMessageReceipt {
@@ -124,7 +128,8 @@ internal class KritorGroupMessageEventImpl(
             directEach = { _, e -> each(e) },
             directPost = { post() },
             each = { _, e -> each(e) },
-            post = { post() })
+            post = { post() }
+        )
             .toReceipt(bot, contact)
     }
 }

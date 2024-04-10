@@ -16,7 +16,8 @@ import love.forte.simbot.message.EmoticonMessage
  */
 @Serializable
 @SerialName("kritor.m.face")
-public data class KritorFace(val id: UIntID, val isBig: Boolean = false, val result: Int? = null) : EmoticonMessage,
+public data class KritorFace(val id: UIntID, val isBig: Boolean = false, val result: Int? = null) :
+    EmoticonMessage,
     KritorSendElementTransformer {
     public companion object {
         /**

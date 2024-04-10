@@ -9,7 +9,9 @@ import love.forte.simbot.component.kritor.core.message.toMessageElement
 import love.forte.simbot.message.Message
 import love.forte.simbot.message.MessageContent
 
-internal suspend inline fun KritorBotImpl.getGroupInfo(block: io.kritor.group.GetGroupInfoRequestKt.Dsl.() -> Unit): GroupInfo =
+internal suspend inline fun KritorBotImpl.getGroupInfo(
+    block: io.kritor.group.GetGroupInfoRequestKt.Dsl.() -> Unit
+): GroupInfo =
     services.groupService.getGroupInfo(getGroupInfoRequest(block)).groupInfo
 
 
@@ -31,10 +33,12 @@ internal suspend inline fun KritorBotImpl.sendMessage(
 ): SendMessageResponse = sendMessage {
     pre()
     this.contact = contact
-    elements.add(element {
-        this.type = ElementType.TEXT
-        this.text = textElement { this.text = text }
-    })
+    elements.add(
+        element {
+            this.type = ElementType.TEXT
+            this.text = textElement { this.text = text }
+        }
+    )
     post()
 }
 

@@ -57,9 +57,11 @@ internal abstract class AbstractKritorBasicGroupInfoImpl : KritorBasicGroupInfo 
 
     override suspend fun delete(vararg options: DeleteOption) {
         runCatching {
-            bot.services.groupService.leaveGroup(leaveGroupRequest {
-                this.groupId = this@AbstractKritorBasicGroupInfoImpl.groupId
-            })
+            bot.services.groupService.leaveGroup(
+                leaveGroupRequest {
+                    this.groupId = this@AbstractKritorBasicGroupInfoImpl.groupId
+                }
+            )
         }.onFailure { e ->
             if (StandardDeleteOption.IGNORE_ON_FAILURE !in options) {
                 throw DeleteFailureException(e)
@@ -127,27 +129,33 @@ internal class KritorGroupInfoImpl(
     override val coroutineContext: CoroutineContext = bot.subCoroutineContext
 
     override suspend fun modifyName(name: String) {
-        bot.services.groupService.modifyGroupName(modifyGroupNameRequest {
-            this.groupId = source.groupId
-            this.groupName = name
-        })
+        bot.services.groupService.modifyGroupName(
+            modifyGroupNameRequest {
+                this.groupId = source.groupId
+                this.groupName = name
+            }
+        )
         this.name = name
     }
 
     override suspend fun modifyRemark(remark: String) {
-        bot.services.groupService.modifyGroupRemark(modifyGroupRemarkRequest {
-            this.groupId = source.groupId
-            this.remark = remark
-        })
+        bot.services.groupService.modifyGroupRemark(
+            modifyGroupRemarkRequest {
+                this.groupId = source.groupId
+                this.remark = remark
+            }
+        )
         this.remark = remark
     }
 
     override fun members(refresh: Boolean): Collectable<KritorGroupMember> =
         flowCollectable {
-            val resp = bot.services.groupService.getGroupMemberList(getGroupMemberListRequest {
-                this.groupId = source.groupId
-                this.refresh = refresh
-            })
+            val resp = bot.services.groupService.getGroupMemberList(
+                getGroupMemberListRequest {
+                    this.groupId = source.groupId
+                    this.refresh = refresh
+                }
+            )
 
             if (resp.groupMemberInfoCount == 0) {
                 return@flowCollectable
@@ -160,15 +168,17 @@ internal class KritorGroupInfoImpl(
 
     override suspend fun member(id: ID, refresh: Boolean): KritorGroupMember? {
         val memberInfo = runCatching {
-            bot.services.groupService.getGroupMemberInfo(getGroupMemberInfoRequest {
-                this.groupId = source.groupId
-                this.refresh = refresh
-                if (id is NumericalID) {
-                    this.uin = id.toLong()
-                } else {
-                    this.uid = id.literal
+            bot.services.groupService.getGroupMemberInfo(
+                getGroupMemberInfoRequest {
+                    this.groupId = source.groupId
+                    this.refresh = refresh
+                    if (id is NumericalID) {
+                        this.uin = id.toLong()
+                    } else {
+                        this.uid = id.literal
+                    }
                 }
-            })
+            )
         }.getOrElse { e ->
             val status = Status.fromThrowable(e)
             if (status.code == Code.NOT_FOUND) null else throw e
@@ -180,7 +190,7 @@ internal class KritorGroupInfoImpl(
     override suspend fun botAsMember(): KritorGroupMember = with(bot.currentAccount.accountUin.ID) {
         member(this, false)
             ?: member(this, true) // refresh and try again.?
-            ?: throw IllegalStateException("Bot info not found in group(id=${source.groupId}, name=${source.groupName})")
+            ?: error("Bot info not found in group(id=${source.groupId}, name=${source.groupName})")
     }
 
     override suspend fun delete(vararg options: DeleteOption) {
@@ -197,9 +207,11 @@ internal class KritorGroupInfoImpl(
         sourceGroupInfo.send(text)
 
     override suspend fun getRemainCountAtAll(): RemainCountAtAll {
-        val result = bot.services.groupService.getRemainCountAtAll(getRemainCountAtAllRequest {
-            this.groupId = source.groupId
-        })
+        val result = bot.services.groupService.getRemainCountAtAll(
+            getRemainCountAtAllRequest {
+                this.groupId = source.groupId
+            }
+        )
 
         return RemainCountAtAllImpl(
             accessAtAll = result.accessAtAll,

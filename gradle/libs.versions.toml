@@ -21,6 +21,9 @@ mockk = "1.13.10"
 # grpc/proto
 grpc = "1.62.2"
 protobuf = "3.25.3"
+# detekt
+# https://detekt.dev/docs/intro
+detekt = "1.23.3"
 
 [libraries]
 # simbot
@@ -142,6 +145,7 @@ protobuf-kotlin = { group = "com.google.protobuf", name = "protobuf-kotlin", ver
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 # https://github.com/google/protobuf-gradle-plugin
 protobuf = { id = "com.google.protobuf", version = "0.9.4" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
 [bundles]
 gradle-common = ["gradle-common-core", "gradle-common-multiplatform", "gradle-common-publication"]

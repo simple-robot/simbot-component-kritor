@@ -59,13 +59,17 @@ public class KritorMusic private constructor(
         public fun io.kritor.event.MusicElementOrBuilder.toKritorMusic(): KritorMusic {
             val platform = getPlatform().resolve()
             val id = if (hasId()) id.ID else null
-            val custom = if (hasCustom()) customMusicData {
-                this@toKritorMusic.custom.url
-                this@toKritorMusic.custom.audio
-                this@toKritorMusic.custom.title
-                this@toKritorMusic.custom.author
-                this@toKritorMusic.custom.pic
-            } else null
+            val custom = if (hasCustom()) {
+                customMusicData {
+                    this@toKritorMusic.custom.url
+                    this@toKritorMusic.custom.audio
+                    this@toKritorMusic.custom.title
+                    this@toKritorMusic.custom.author
+                    this@toKritorMusic.custom.pic
+                }
+            } else {
+                null
+            }
 
             return KritorMusic(platform, id, custom)
         }

@@ -18,7 +18,8 @@ import love.forte.simbot.message.EmoticonMessage
  */
 @Serializable
 @SerialName("kritor.m.bubbleFace")
-public data class KritorBubbleFace(val id: UIntID, val count: Int) : EmoticonMessage,
+public data class KritorBubbleFace(val id: UIntID, val count: Int) :
+    EmoticonMessage,
     KritorSendElementTransformer {
 
     public companion object {

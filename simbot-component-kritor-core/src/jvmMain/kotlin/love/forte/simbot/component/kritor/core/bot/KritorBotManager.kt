@@ -40,7 +40,9 @@ public interface KritorBotManager : BotManager {
      */
     override fun register(configuration: SerializableBotConfiguration): KritorBot {
         if (configuration !is SerializableKritorBotConfiguration) {
-            throw UnsupportedBotConfigurationException("Required 'SerializableKritorBotConfiguration', but ${configuration::class}")
+            throw UnsupportedBotConfigurationException(
+                "Required 'SerializableKritorBotConfiguration', but ${configuration::class}"
+            )
         }
 
         val authReq = configuration.toAuthReq()
@@ -53,7 +55,11 @@ public interface KritorBotManager : BotManager {
     /**
      * 直接提供最基础、最原始的所需信息，并构建一个 [KritorBot].
      */
-    public fun register(authReq: AuthReq, channelBuilder: ManagedChannelBuilder<*>, configuration: KritorBotConfiguration): KritorBot
+    public fun register(
+        authReq: AuthReq,
+        channelBuilder: ManagedChannelBuilder<*>,
+        configuration: KritorBotConfiguration
+    ): KritorBot
 
     /**
      * 直接提供最基础、最原始的所需信息，并构建一个 [KritorBot].
@@ -64,23 +70,43 @@ public interface KritorBotManager : BotManager {
     /**
      * 直接提供最基础、最原始的所需信息，并构建一个 [KritorBot].
      */
-    public fun register(authReq: AuthReq, channelBuilder: ManagedChannelBuilder<*>, configurer: ConfigurerFunction<KritorBotConfiguration>): KritorBot =
+    public fun register(
+        authReq: AuthReq,
+        channelBuilder: ManagedChannelBuilder<*>,
+        configurer: ConfigurerFunction<KritorBotConfiguration>
+    ): KritorBot =
         register(authReq, channelBuilder, KritorBotConfiguration().invokeBy(configurer))
 
     /**
      * 提供鉴权信息和连接信息，构建一个 [KritorBot].
      */
-    public fun register(account: String, ticket: String, name: String, port: Int, configuration: KritorBotConfiguration): KritorBot {
-        return register(authReq {
-            this.account = account
-            this.ticket = ticket
-        }, ManagedChannelBuilder.forAddress(name, port).usePlaintext().enableRetry(), configuration)
+    public fun register(
+        account: String,
+        ticket: String,
+        name: String,
+        port: Int,
+        configuration: KritorBotConfiguration
+    ): KritorBot {
+        return register(
+            authReq {
+                this.account = account
+                this.ticket = ticket
+            },
+            ManagedChannelBuilder.forAddress(name, port).usePlaintext().enableRetry(),
+            configuration
+        )
     }
 
     /**
      * 提供鉴权信息和连接信息，构建一个 [KritorBot].
      */
-    public fun register(account: String, ticket: String, name: String, port: Int, configurer: ConfigurerFunction<KritorBotConfiguration>): KritorBot =
+    public fun register(
+        account: String,
+        ticket: String,
+        name: String,
+        port: Int,
+        configurer: ConfigurerFunction<KritorBotConfiguration>
+    ): KritorBot =
         register(account, ticket, name, port, KritorBotConfiguration().invokeBy(configurer))
 
     /**

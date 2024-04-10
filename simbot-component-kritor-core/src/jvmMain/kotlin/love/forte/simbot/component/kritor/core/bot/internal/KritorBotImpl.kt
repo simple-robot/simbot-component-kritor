@@ -66,7 +66,9 @@ internal class KritorBotImpl(
     private val eventDispatcher: EventDispatcher
 ) : KritorBot, JobBasedBot() {
     private val logger = LoggerFactory.getLogger("love.forte.simbot.component.kritor.core.bot.${authReq.account}")
-    private val eventLogger = LoggerFactory.getLogger("love.forte.simbot.component.kritor.core.bot.event.${authReq.account}")
+    private val eventLogger = LoggerFactory.getLogger(
+        "love.forte.simbot.component.kritor.core.bot.event.${authReq.account}"
+    )
     internal val subCoroutineContext: CoroutineContext = coroutineContext.minusKey(Job)
 
     override val id: ID = authReq.account.ID
@@ -74,7 +76,7 @@ internal class KritorBotImpl(
     private var _currentAccount: GetCurrentAccountResponse? = null
 
     internal val currentAccount: GetCurrentAccountResponse
-        get() = _currentAccount ?: throw IllegalStateException("Bot is not start")
+        get() = _currentAccount ?: error("Bot is not start")
 
     override val accountInfo: BotAccountInfo
         get() = BotAccountInfoImpl(currentAccount)
@@ -145,9 +147,11 @@ internal class KritorBotImpl(
      * [event](https://github.com/KarinJS/kritor/blob/main/docs/event/event.md)
      */
     private fun eventFlow(type: EventType? = null): Flow<EventStructure> {
-        return services.eventService.registerActiveListener(requestPushEvent {
-            type?.also { this.type = it }
-        })
+        return services.eventService.registerActiveListener(
+            requestPushEvent {
+                type?.also { this.type = it }
+            }
+        )
     }
 
     override val groupRelation: KritorGroupRelation = KritorGroupRelationImpl()
@@ -163,9 +167,11 @@ internal class KritorBotImpl(
         }
 
         private suspend fun getGroupListResponse(refresh: Boolean) =
-            services.groupService.getGroupList(getGroupListRequest {
-                this.refresh = refresh
-            })
+            services.groupService.getGroupList(
+                getGroupListRequest {
+                    this.refresh = refresh
+                }
+            )
 
         override suspend fun group(id: ID): KritorGroup? {
             val groupIdValue = (id as? NumericalID)?.toLong() ?: id.literal.toLong()
@@ -195,7 +201,7 @@ internal class KritorBotImpl(
                     when (eventStructure.type) {
                         EventType.EVENT_TYPE_MESSAGE -> acceptMessageEvent(eventStructure, eventStructure.message)
 
-                        else -> pushUnsupported(eventStructure)// TODO("processEvents $eventStructure")
+                        else -> pushUnsupported(eventStructure) // TODO("processEvents $eventStructure")
                     }
                 }
             }
